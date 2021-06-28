@@ -10,7 +10,6 @@ import "./Upload.css";
 
 export default function Upload() {
     const [insertPerson] = useMutation(INSERT_PEOPLE_MUTATION);
-    console.log(insertPerson)
     return <div id="Upload">
         <div id="PeopleUploader">
             <Uploader tag="People" mutation={insertPerson}/>

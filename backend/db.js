@@ -15,7 +15,8 @@ const peopleSchema = new Schema({
 
 const People = mongoose.model("People", peopleSchema);
 const db = { People };
-module.exports = db;
+// module.exports = db;
+export default db;
 
 // function writeData(store) {
 //     const s = JSON.stringify(store, null, 2);

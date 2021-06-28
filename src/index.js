@@ -1,27 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
   HttpLink,
-} from '@apollo/client';
-import { split } from 'apollo-link';
-import { WebSocketLink } from 'apollo-link-ws';
-import { getMainDefinition } from 'apollo-utilities';
+} from "@apollo/client";
+import { split } from "apollo-link";
+import { WebSocketLink } from "apollo-link-ws";
+import { getMainDefinition } from "apollo-utilities";
 
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+
+const url = new URL("/graphql", window.location.href);
 
 // Create an http link:
 const httpLink = new HttpLink({
-  uri: 'http://localhost:5000/',
+  // uri: 'http://localhost:5000/graphql',
+  uri: url.href,
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:5000/`,
+  // uri: `ws://localhost:5000/graphql`,
+  uri: url.href.replace("http", "ws"),
   options: { reconnect: true },
 });
 
@@ -32,12 +36,12 @@ const link = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
     return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
     );
   },
   wsLink,
-  httpLink,
+  httpLink
 );
 
 const client = new ApolloClient({
@@ -51,7 +55,7 @@ ReactDOM.render(
       <App />
     </ApolloProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
