@@ -3,7 +3,8 @@ import CharCard from './CharCard.js'
 import {message} from 'antd'
 import {useEffect, useRef} from 'react'
 
-function Players({me, status, setMembersToChoose, setMembersChosen , membersChosen, membersToChoose, roomInfo}) {
+function Players({playersParams}) {
+    const {me, status, setMembersToChoose, setMembersChosen , membersChosen, membersToChoose, roomInfo, assassin, setAssassin} = playersParams
     let twoRow = false
     const notInitialRender = useRef(false)
     useEffect(() => {

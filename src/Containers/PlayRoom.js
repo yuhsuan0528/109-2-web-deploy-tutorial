@@ -18,11 +18,11 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
   const [membersChosen, setMembersChosen] = useState([])
   const [assassin, setAssassin] = useState('')
   const [playerStatus,setPlayerStatus] = useState([
-    {name:'1', me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
-    {name:'2', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
-    {name:'3', me: false, character: 'null', isLeader: false, isAssigned: false, vote:'false'},
-    {name:'4', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
-    {name:'5', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
+    {name:'1', me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
+    {name:'2', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
+    {name:'3', me: false, character: 'null', isLeader: false, isAssigned: false, vote:'null'},
+    {name:'4', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
+    {name:'5', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
   ])
   // name, character, me from roomInfo.players.playerList
   // isLeader, isAssigned, vote from roomInfo.players
@@ -94,13 +94,25 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
     } else {
       setGameStatus(prev => ({... prev, score: []}))
     }
-  }, [roomInfo.cup_results])  
+  }, [roomInfo.cup_results]) 
+
+  const playersParams = {
+    me: me,
+    status: playerStatus,
+    membersToChoose: membersToChoose,
+    setMembersToChoose: setMembersToChoose,
+    membersChosen: membersChosen,
+    setMembersChosen: setMembersChosen,
+    roomInfo:roomInfo,
+    assassin: assassin,
+    setAssassin: setAssassin
+  }
 
   return (
     <>
       <Row >
         <Col className="Column-1"  xl={{ span: 16}}>
-          <Player me={me} status={playerStatus} setMembersToChoose={setMembersToChoose} setMembersChosen={setMembersChosen} membersChosen={membersChosen} membersToChoose={membersToChoose} roomInfo={roomInfo}/>
+          <Player playersParams={playersParams}/>
           <Board status={gameStatus}/>
         </Col>
         <Col className="Column-2"  xl={{ span: 8}}>

@@ -3,7 +3,7 @@ import {message} from 'antd'
 import {useState, useEffect, useRef} from 'react'
 
 function CharCard({me, cardStatus, twoRow, setMembersToChoose, setMembersChosen, membersChosen, membersToChoose, roomInfo}) {
-    const {name, isMe, character, isLeader, isAssigned, vote} = cardStatus
+    const {name, me:isMe, character, isLeader, isAssigned, vote} = cardStatus
     const [selected, setSelected] = useState(false)
     let teamDir = ''
     const charDict = {
@@ -61,8 +61,10 @@ function CharCard({me, cardStatus, twoRow, setMembersToChoose, setMembersChosen,
             setMembersChosen(membersChosen.filter(person => person !== name))
         }        
     },[selected])
+    const me_name = isMe? `${name}⭐`:name 
     return (
         <>
+            <p align='center'>{me_name}</p>
             <img className={cardClass} src={charDir} onClick={clickHandler}/>
             <img className={markerClass} src={voteDir}/>
             <img className={markerClass} src={teamDir}/>

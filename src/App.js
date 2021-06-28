@@ -17,7 +17,7 @@ const App = () => {
   const [inRoom, setInRoom] = useState(false);
 
   const [roomName, setRoomName] = useState("");
-  console.log(roomName)
+  // console.log(roomName)
   
   const displayStatus = (payload) => {
     if(payload.msg){
