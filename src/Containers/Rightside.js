@@ -137,24 +137,26 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
       else if(status === 'cup' && checkIsAssigned()) openNotification("cup");
       else if (status === 'cup') setCardContent("wait_cup");
       else if (status === 'pre') {
-        openNotification("character");
+        setCardContent("character");
         setGameStarted(false);
       }
-      else if(status === 'bad') {
+      else if(status === 'good') {
         setGameStarted(false); 
         setShowGoodWinAnime(true)
         var timeoutID = window.setTimeout(( () => {
           setShowGoodWinAnime(false); 
         }), 5000);
+        setCardContent("character");
       }
-      else if(status === 'good') {
+      else if(status === 'bad') {
         setGameStarted(false); 
         setShowBadWinAnime(true)
         var timeoutID = window.setTimeout(( () => {
           setShowBadWinAnime(false); 
         }), 5000);
+        setCardContent("character");
       }
-      else  openNotification("character");
+      else  setCardContent("character");
     }
     console.log(roomInfo) 
   }, [roomInfo])
@@ -215,7 +217,7 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
                 showStartAnime ?<StartAnime/> : 
                 showGoodWinAnime ? <GoodVictoryAnime/> :
                 showBadWinAnime ? <BadVictoryAnime/> :
-                cardContent === "character" ?  <CharacterTable playerNum={playerNum}/> : 
+                cardContent === "character" ?  <CharacterTable playerNum={roomInfo.num_of_players} players={roomInfo.players}/> : 
                 cardContent === "vote" ? <ChooseVote name={me} roomName={roomName} voted={voted} setVoted={setVoted}/> : 
                 cardContent === "cup" ? <ChooseCup name={me} roomName={roomName} cupped={cupped} setCupped={setCupped}/> : 
                 cardContent === "team" ? <ChoosePeople number={membersToChoose} membersChosen={membersChosen} roomName={roomName} leaderName={me}/> :
@@ -264,7 +266,7 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
           </div>
             <ChatRoom me={me} displayStatus={displayStatus} roomName={roomName}/>
 
-            <Modal title="派票紀錄" 
+            <Modal title="投票紀錄" 
             visible={isModalVisible_vote} 
             onOk={() => handleOk("vote")} 
             onCancel={() => handleCancel("vote")} 
@@ -272,7 +274,7 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
               <VoteTable results={voteResults}/>
             </Modal>
 
-            <Modal title="投票結果" 
+            <Modal title="任務結果" 
             visible={isModalVisible_cup} 
             onOk={() => handleOk("cup")} 
             onCancel={() => handleCancel("cup")} 
