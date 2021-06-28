@@ -1,9 +1,7 @@
 type Query {
 	rooms: [Room]
-	roomPlayers(roomName: String!): [Player]
 	roomChat(roomName: String!): [Message]
 	roomInfo(roomName: String!): Room
-	playerList(playerName: String!): [PlayerInfo]
 }
 
 type Mutation {
@@ -22,10 +20,8 @@ type Mutation {
 
 type Subscription {
 	room: RoomPayload!
-	roomPlayer(roomName: String!): PlayerPayload!
 	message(roomName: String!): MessagePayload!
 	roomInfo(roomName: String!): RoomInfoPayload!
-	playerList(playerName: String!): PlayerInfoPayload!
 }
 
 type Player {
@@ -83,14 +79,6 @@ type RoomPayload{
 	data: [Room!]!
 }
 
-type PlayerPayload{
-	data: Player!
-}
-
 type RoomInfoPayload{
 	data: Room!
-}
-
-type PlayerInfoPayload{
-	data: [PlayerInfo!]!
 }

@@ -47,11 +47,6 @@ const Mutation = {
     const existing = room.players.find(p => String(p) === String(host._id))
     if (!existing) {
       await room.players.push(host._id);
-      pubsub.publish(`roomPlayer ${roomName}`, {
-        roomPlayer: {
-          data: host,
-        }
-      });
     }
     await host.save();
     await room.save();
@@ -95,11 +90,6 @@ const Mutation = {
       player.room = room._id;
       player.is_leader = false;
       await room.players.push(player._id);
-      pubsub.publish(`roomPlayer ${roomName}`, {
-        roomPlayer: {
-          data: player,
-        }
-      });
     }
     await player.save();
     await room.save();
@@ -228,12 +218,6 @@ const Mutation = {
         await myself.save();
 
       }
-
-      pubsub.publish(`playerList ${my_name}`, {
-        playerList: {
-          data: myself.players_list,
-        }
-      });
     }
 
     // publish the new room info
