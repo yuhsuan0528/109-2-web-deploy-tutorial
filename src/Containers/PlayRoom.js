@@ -8,20 +8,21 @@ import { useQuery } from '@apollo/react-hooks';
 import {
   GAMEINFO_QUERY,
   ROOMINFO_SUBSCRIPTION,
-  PLAYER_LIST_QUERY,
-  PLAYER_LIST_SUBSCRIPTION
+  // PLAYER_LIST_QUERY,
+  // PLAYER_LIST_SUBSCRIPTION,
+  ASSASSIN_MUTATION
 } from "../graphql"
 
 const PlayRoom = ({me, displayStatus, roomName}) => {
   const [membersToChoose, setMembersToChoose] = useState(4)
   const [membersChosen, setMembersChosen] = useState([])
+  const [assassin, setAssassin] = useState('')
   const [playerStatus,setPlayerStatus] = useState([
-    {name:'1', me: true, character: 'P', isLeader: false, isAssigned: true, vote: 'true'},
-    {name:'2', me: false, character: 'M', isLeader: true, isAssigned: true, vote: 'true'},
+    {name:'1', me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
+    {name:'2', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
     {name:'3', me: false, character: 'null', isLeader: false, isAssigned: false, vote:'false'},
-    {name:'4', me: false, character: 'null', isLeader: false, isAssigned: true, vote: 'true'},
-    {name:'5', me: false, character: 'M', isLeader: false, isAssigned: false, vote: 'false'},
-    {name:'6', me: false, character: 'null', isLeader: false, isAssigned: true, vote: 'true'},
+    {name:'4', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
+    {name:'5', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'false'},
   ])
   // name, character, me from roomInfo.players.playerList
   // isLeader, isAssigned, vote from roomInfo.players
@@ -54,41 +55,8 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
       setRoomInfo(data.roomInfo);
     }
   },[data])
-  useEffect(() => {
-    // console.log(roomInfo)
-  }, [roomInfo])
-  
-
-  // const playerList = useQuery(PLAYER_LIST_QUERY,{variables: { playerName: me},});
-  // if (playerList.error) console.log('Error:', playerList.error);
-  // if (!playerList.loading) console.log("query: ", playerList.data)
-
-  // useEffect(()=>{
-  //   if(!playerList.loading) {
-  //     setPlayerList1(playerList.data.playerList)
-  //     console.log(playerList.data)
-  //   }
-  // },[playerList.data])
-
-  // useLayoutEffect( () => {
-  //   try {
-  //     playerList.subscribeToMore({
-  //       document: PLAYER_LIST_SUBSCRIPTION,
-  //       variables: { playerName: me},
-  //       updateQuery: (prev, { subscriptionData }) => {
-  //         if (!subscriptionData.data) return prev;
-  //         const newPlayerList = subscriptionData.data.playerList.data;
-  //         console.log("newPlayerList: ", newPlayerList)
-  //         return newPlayerList;
-  //       },
-  //     });
-  //   } catch (e) {
-  //     console.log(e);
-  // }
-  // }, [subscribeToMore]);
 
   useEffect(() => {
-    console.log(roomInfo)
     if (roomInfo.status !== "pre-game" && roomInfo.players){
       const self = roomInfo.players.find(player => player.name === me)
       let newPlayerStatus = [... self.players_list]
@@ -107,8 +75,10 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
     if (roomInfo.status){
       if (roomInfo.status.includes("assign") || roomInfo.status.includes("vote")){
         let newRound = parseInt(roomInfo.status.slice(-1))-1
-        console.log(newRound)
         setGameStatus(prev => ({... prev, round: newRound}))
+      }
+      if (roomInfo.status === 'assissin'){
+
       }
     }
   }, [roomInfo.status])
@@ -124,17 +94,13 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
     } else {
       setGameStatus(prev => ({... prev, score: []}))
     }
-  }, [roomInfo.cup_results])
-  useEffect(() => {
-    console.log(gameStatus)
-  }, [gameStatus])
-  
+  }, [roomInfo.cup_results])  
 
   return (
     <>
       <Row >
         <Col className="Column-1"  xl={{ span: 16}}>
-          <Player status={playerStatus} setMembersToChoose={setMembersToChoose} setMembersChosen={setMembersChosen} membersChosen={membersChosen} membersToChoose={membersToChoose}/>
+          <Player me={me} status={playerStatus} setMembersToChoose={setMembersToChoose} setMembersChosen={setMembersChosen} membersChosen={membersChosen} membersToChoose={membersToChoose} roomInfo={roomInfo}/>
           <Board status={gameStatus}/>
         </Col>
         <Col className="Column-2"  xl={{ span: 8}}>

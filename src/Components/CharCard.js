@@ -2,10 +2,9 @@ import React from 'react'
 import {message} from 'antd'
 import {useState, useEffect, useRef} from 'react'
 
-function CharCard({cardStatus, twoRow, setMembersToChoose, setMembersChosen, membersChosen, membersToChoose}) {
+function CharCard({me, cardStatus, twoRow, setMembersToChoose, setMembersChosen, membersChosen, membersToChoose, roomInfo}) {
     const {name, isMe, character, isLeader, isAssigned, vote} = cardStatus
     const [selected, setSelected] = useState(false)
-    const notInitialRender = useRef(false)
     let teamDir = ''
     const charDict = {
         'GM': 'images/good_people_merlin.jpg',
@@ -42,27 +41,25 @@ function CharCard({cardStatus, twoRow, setMembersToChoose, setMembersChosen, mem
         markerClass = "marker-small"
     }
     const clickHandler = () => {
-        if (membersToChoose === 0 && !selected) {
-            message.info('Team is full!')
-        } else {
-            setSelected(!selected)
+        const leader = roomInfo.players.find(player => player.is_leader)
+        if(roomInfo.status.includes('assign') && leader.name === me){
+            if (membersToChoose === 0 && !selected) {
+                message.info('Team is full!')
+            } else {
+                setSelected(!selected)
+            }
         }
     }
     useEffect(() => {
-        if (notInitialRender.current){
-            if(selected){
-                message.info(`selected ${name}`)
-                setMembersToChoose(prev => prev - 1)
-                setMembersChosen([...membersChosen, name])
-            } else {
-                message.info(`unselected ${name}`)
-                setMembersToChoose(prev => prev + 1)
-                setMembersChosen(membersChosen.filter(person => person !== name))
-            }
+        if(selected){
+            // message.info(`selected ${name}`)
+            setMembersToChoose(prev => prev - 1)
+            setMembersChosen([...membersChosen, name])
         } else {
-            notInitialRender.current = true
-        }
-        
+            // message.info(`unselected ${name}`)
+            setMembersToChoose(prev => prev + 1)
+            setMembersChosen(membersChosen.filter(person => person !== name))
+        }        
     },[selected])
     return (
         <>

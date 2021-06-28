@@ -7,6 +7,7 @@ export { CREATE_MESSAGE_MUTATION } from './chatbox/mutations';
 export { MESSAGE_SUBSCRIPTION } from './chatbox/subscriptions';
 
 export { ROOM_PLAYERS_QUERY, PLAYER_LIST_QUERY } from './playroom/queries'
+export { ASSASSIN_MUTATION } from './playroom/mutations'
 export { ROOM_PLAYERS_SUBSCRIPTION, PLAYER_LIST_SUBSCRIPTION } from './playroom/subscriptions'
 
 
