@@ -15,14 +15,18 @@ import { split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 
+const url = new URL("/graphql", window.location.href);
+
 // Create an http link: http是要client主動去跟server要資料
 const httpLink = new HttpLink({
-  uri: 'http://localhost:5000/',
+  //uri: 'http://localhost:80/',
+  uri: url.href,
 });
 
 // Create a WebSocket link: webSocket是server會自動更新資料
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:5000/`,
+  //uri: `ws://localhost:80/`,
+  uri: url.href.replace("http", "ws"),
   options: { reconnect: true },
 });
 
