@@ -11,11 +11,15 @@ import ChooseVote from "../Components/rightside/ChooseVote.js";
 import ChooseCup from "../Components/rightside/ChooseCup.js";
 import ChoosePeople from "../Components/rightside/ChoosePeople.js";
 import {
-  START_GAME_MUTATION
+  START_GAME_MUTATION,
+  LEAVE_ROOM_MUTATION,
+  CLOSE_ROOM_MUTATION
 } from "../graphql"
 import StartAnime from '../Components/Anime/StartAnime.js';
+import GoodVictoryAnime from '../Components/Anime/GoodVictoryAnime.js';
+import BadVictoryAnime from '../Components/Anime/BadVictoryAnime.js';
 
-const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersToChoose}) => {
+const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersToChoose, setInRoom}) => {
 
   const assignedNumberList = {5: [2,3,2,3,3],
                               6: [2,3,4,3,4],
@@ -36,6 +40,9 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
   const [gameStarted, setGameStarted] = useState(false);
 
   const [showStartAnime, setShowStartAnime] = useState(false);
+  const [showGoodWinAnime, setShowGoodWinAnime] = useState(false);
+  const [showBadWinAnime, setShowBadWinAnime] = useState(false);
+
 
   const showModal = (type) => {
     if(type === "vote") setIsModalVisible_vote(true);
@@ -81,6 +88,8 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
 
   // handle GraphQL
   const [startGame] = useMutation(START_GAME_MUTATION);
+  const [leaveRoom] = useMutation(LEAVE_ROOM_MUTATION);
+  const [closeRoom] = useMutation(CLOSE_ROOM_MUTATION);
 
   const checkLeader = () => {
     for(var i=0; i<roomInfo.players.length; i++){
@@ -100,6 +109,7 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
     return null;
   }
 
+
   useEffect(()=>{
     if(Object.keys(roomInfo).length !== 0){
       const [status, round, time] = roomInfo.status.split('-');
@@ -110,7 +120,6 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
       if(status === 'assign' && !gameStarted){
         setShowStartAnime(true)
         var timeoutID = window.setTimeout(( () => {
-          console.log("Hello!");
           setShowStartAnime(false); 
         }), 5000);
       }
@@ -120,7 +129,10 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
         setMembersToChoose(assignedNumberList[roomInfo.num_of_players][round-1]);
         setGameStarted(true)
       }
-      else if(status === 'assign') setGameStarted(true);
+      else if(status === 'assign') {
+        setGameStarted(true);
+        openNotification("waitAssign");
+      }
       else if (status === "vote") openNotification("vote");
       else if(status === 'cup' && checkIsAssigned()) openNotification("cup");
       else if (status === 'cup') setCardContent("wait_cup");
@@ -128,8 +140,23 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
         openNotification("character");
         setGameStarted(false);
       }
-      else  openNotification("waitAssign");
-    } 
+      else if(status === 'bad') {
+        setGameStarted(false); 
+        setShowGoodWinAnime(true)
+        var timeoutID = window.setTimeout(( () => {
+          setShowGoodWinAnime(false); 
+        }), 5000);
+      }
+      else if(status === 'good') {
+        setGameStarted(false); 
+        setShowBadWinAnime(true)
+        var timeoutID = window.setTimeout(( () => {
+          setShowBadWinAnime(false); 
+        }), 5000);
+      }
+      else  openNotification("character");
+    }
+    console.log(roomInfo) 
   }, [roomInfo])
 
 
@@ -140,7 +167,44 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
   return (
     <>
           
-          <Button className="right-side-button" bordered={false} onClick={() => setCardContent("character")}>看角色</Button>
+          <div className="right-side-top-area">
+            <button 
+            className="right-side-leave-room-button" 
+            bordered={false}
+            onClick={async () => {
+              try{
+                  await leaveRoom({
+                  variables:{
+                      roomName: roomName,
+                      playerName: me,
+                    }
+                  })
+                  setInRoom(false)
+                }
+                catch(e){
+                  console.log(e);
+                }  
+            }}>離開房間</button>
+            
+            { roomInfo.host === me ?  <button 
+            className="right-side-leave-room-button" 
+            bordered={false}
+            onClick={async () => {
+              try{
+                  await closeRoom({
+                  variables:{
+                      roomName: roomName,
+                      playerName: me,
+                    }
+                  })
+                  setInRoom(false)
+                }
+                catch(e){
+                  console.log(e);
+                }  
+            }}>關閉房間</button> : <div></div>
+            }
+          </div>
            <div className="right-side-character-board">
 
            <Card  bordered={false} style={{ width: 450 }}>
@@ -148,7 +212,9 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
             <div className="right-side-card">
               
               { //style={{padding:"10px",backgroundColor:"white", opacity:"0.5", zIndex:"100"}}
-                showStartAnime ? <StartAnime/> : 
+                showStartAnime ?<StartAnime/> : 
+                showGoodWinAnime ? <GoodVictoryAnime/> :
+                showBadWinAnime ? <BadVictoryAnime/> :
                 cardContent === "character" ?  <CharacterTable playerNum={playerNum}/> : 
                 cardContent === "vote" ? <ChooseVote name={me} roomName={roomName} voted={voted} setVoted={setVoted}/> : 
                 cardContent === "cup" ? <ChooseCup name={me} roomName={roomName} cupped={cupped} setCupped={setCupped}/> : 
@@ -228,7 +294,9 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
 
 export default Rightside;
 
-/* Test Data
+/* 
+<Button className="right-side-button" bordered={false} onClick={() => setCardContent("character")}>看角色</Button>
+Test Data
 const cupResults = [
     {good: 1, bad: 1, player: [1,2]},
     {good: 3, bad: 0, player: [1,2,4]},

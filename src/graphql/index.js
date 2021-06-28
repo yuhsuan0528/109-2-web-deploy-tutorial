@@ -12,5 +12,5 @@ export { ROOM_PLAYERS_SUBSCRIPTION, PLAYER_LIST_SUBSCRIPTION } from './playroom/
 
 
 export { GAMEINFO_QUERY } from './gameInfo/queries';
-export { START_GAME_MUTATION, ASSIGN_MUTATION, VOTE_MUTATION, CUP_MUTATION } from './gameInfo/mutations';
+export { START_GAME_MUTATION, ASSIGN_MUTATION, VOTE_MUTATION, CUP_MUTATION, LEAVE_ROOM_MUTATION, CLOSE_ROOM_MUTATION  } from './gameInfo/mutations';
 export { ROOMINFO_SUBSCRIPTION } from './gameInfo/subscriptions'
