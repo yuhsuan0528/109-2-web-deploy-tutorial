@@ -1,0 +1,278 @@
+.sign-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 500px;
+  margin: auto;
+}
+
+
+/* -------------
+  GAME LOBBY
+  -------------- */
+
+@import url(//fonts.googleapis.com/earlyaccess/notosanstc.css);
+.game-lobby-main-block{
+  font-family: "Noto Sans TC", "FangSong", Arial, serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 800px;
+  margin: auto;
+  background: #6B799E; 
+}
+
+.game-lobby-side-block{
+   width: 200px;
+   background: #949FA4; 
+}
+
+.game-lobby-room{
+  margin:15px;
+  align-items: center;
+  font-size:28px;
+  width: 600px;
+  height: 150px;
+  background: #EBC57C;
+  border-radius:10px;
+}
+
+.game-lobby-room-name{
+  letter-spacing: 2px;
+  line-height: 24px;
+  position:relative;
+  top:20px;
+  left:30px;
+}
+
+.game-lobby-button{
+  position:relative;
+  top:5px;
+  margin:0 auto;
+  width: 450px;
+}
+
+
+/* ---------------
+    RIGHT SIDE
+  ---------------- */
+
+
+.right-side-message{
+  text-align:left;
+}
+
+.right-side-messagebox {
+  width: 450px;
+  height: 310px;
+  background: #c6c6c6;
+  border-radius: 5px;
+  overflow: auto;
+  margin:0px auto;
+  padding: 20px;
+}
+
+.right-side-message-input-block {
+  width: 450px;
+  margin:0px auto;
+}
+
+.App-message{
+  font-size: 16px;
+}
+
+.App-message-me {
+  text-align : right;
+}
+
+
+.right-side-card{
+  height:230px;
+}
+
+.right-side-card h1 {
+  font-size: 30px;
+}
+
+
+.right-side-character-board {
+  padding: 30px;
+}
+
+.right-side-character-card {
+  padding: 5px;
+  width: 75px;
+}
+
+.right-side-vote-area{
+  justify-content: center;
+  display: flex;
+}
+
+.right-side-vote-button-area{
+  justify-content: center;
+  display: flex;
+}
+
+.right-side-vote-button{
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: #4DB4DC;
+  border: none;
+  color: white;
+  font-size: 16px;
+  width:80px;
+  height:30px;
+  cursor: pointer;
+}
+
+.right-side-vote-button:hover{
+  background-color: #A6D4E6;
+}
+
+.right-side-vote-card{
+  padding: 12px;
+  width: 105px;
+
+}
+
+.right-side-button {
+  top:15px;
+  margin: 5px;
+  font-size:28px;
+}
+
+.right-side-cup-card{
+  width: 80px;
+}
+
+
+
+
+
+/* ---------------------------------
+  LEFT SIDE
+  ---------------------------------- */
+
+
+
+
+.left-side-character-card-big {
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 150px;
+}
+
+.left-side-character-card-small {
+  padding-left: 20px;
+  padding-right: 5px;
+  width: 100px;
+}
+
+.player-section {
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 10px;
+}
+
+.board {
+  width: 650px;
+  position:absolute;
+  top: 230px;
+  left: 130px;
+  z-index: 1;
+}
+
+.marker-big {
+  padding-left: 20px;
+  width: 65px;
+}
+
+.marker-small {
+  padding-left: 5px;
+  width: 40px;
+}
+
+.marker-score-1 {
+  width: 107px;
+  position:absolute;
+  top: 366px;
+  left: 151px;
+  z-index: 2;
+}
+
+.marker-score-2 {
+  width: 107px;
+  position:absolute;
+  top: 366px;
+  left: 275px;
+  z-index: 2;
+}
+
+.marker-score-3 {
+  width: 107px;
+  position:absolute;
+  top: 366px;
+  left: 397px;
+  z-index: 2;
+}
+
+.marker-score-4 {
+  width: 107px;
+  position:absolute;
+  top: 366px;
+  left: 522px;
+  z-index: 2;
+}
+
+.marker-score-5 {
+  width: 107px;
+  position:absolute;
+  top: 366px;
+  left: 645px;
+  z-index: 2;
+}
+
+.marker-round-1 {
+  width: 83px;
+  position:absolute;
+  top: 552px;
+  left: 151px;
+  z-index: 2;
+}
+
+.marker-round-2 {
+  width: 83px;
+  position:absolute;
+  top: 552px;
+  left: 251px;
+  z-index: 2;
+}
+
+.marker-round-3 {
+  width: 83px;
+  position:absolute;
+  top: 552px;
+  left: 351px;
+  z-index: 2;
+}
+
+.marker-round-4 {
+  width: 83px;
+  position:absolute;
+  top: 552px;
+  left: 452px;
+  z-index: 2;
+}
+
+.marker-round-5 {
+  width: 83px;
+  position:absolute;
+  top: 552px;
+  left: 552px;
+  z-index: 2;
+}

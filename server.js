@@ -13,6 +13,9 @@ import db from "./backend/db.js";
 import Query from "./backend/resolvers/Query.js";
 import Mutation from "./backend/resolvers/Mutation.js";
 import Subscription from "./backend/resolvers/Subscription.js";
+import Player from "./backend/resolvers/Player.js";
+import Room from "./backend/resolvers/Room.js";
+import Message from "./backend/resolvers/Message.js";
 import mongo from "./backend/mongo.js";
 import apiRoute from "./backend/route/api.js";
 
@@ -37,6 +40,9 @@ const server = new ApolloServer({
     Query,
     Mutation,
     Subscription,
+    Player,
+    Room,
+    Message,
   },
   context: {
     db,

@@ -1,45 +1,96 @@
-type Person {
-    ssn: String!
-    name: ID!
-    location: Location
-    severity: Int!
-}
-
-type Location {
-    name: String!
-    description: String!  
-    # e.g. "10617 臺北市羅斯福路四段一號; No.1, Sec. 4, Roosevelt Road, Taipei, 10617 Taiwan."
-    # 用 string match 查每個縣市的確診數
-}
-
 type Query {
-    statsCount(
-        severity: Int,
-        locationKeywords: [String!]!,
-    ): [Int!]
+	rooms: [Room]
+	roomPlayers(roomName: String!): [Player]
+	roomChat(roomName: String!): [Message]
+	roomInfo(roomName: String!): Room
+	playerList(playerName: String!): [PlayerInfo]
 }
 
 type Mutation {
-    insertPeople(data: [PersonInput!]!): Boolean
-}
-
-input PersonInput {
-    ssn: String!
-    name: String!
-    severity: Int!
-    location: LocationInput
-}
-
-input LocationInput {
-    name: String!
-    description: String!
+	logIn(name: String!): String!
+	createRoom(roomName: String!, hostName: String!, num: Int!): String!
+	joinRoom(roomName: String!, playerName: String!): String!
+	createMessage(roomName: String!, playerName: String!, body: String): Message!
+	startGame(roomName: String!, playerName: String!): String!
+	assign(roomName: String!, leaderName: String!, assignedNames: [String!]!): String!
+	vote(roomName: String!, playerName: String!, agree: Boolean!): String!
+	cup(roomName: String!, playerName: String!, agree: Boolean!): String!
+	assassin(roomName: String!, playerName: String!, targetName: String!): String!
+	leaveRoom(roomName: String!, playerName: String!): String!
+	closeRoom(roomName: String!, playerName: String!): String!
 }
 
 type Subscription {
-    people: PeopleSubscriptionPayload
+	room: RoomPayload!
+	roomPlayer(roomName: String!): PlayerPayload!
+	message(roomName: String!): MessagePayload!
+	roomInfo(roomName: String!): RoomInfoPayload!
+	playerList(playerName: String!): PlayerInfoPayload!
 }
 
-type PeopleSubscriptionPayload {
-    inserted: [Person!]!
-    deleted: [Person!]!
+type Player {
+	id: ID!
+	name: String!
+	room: Room
+	is_leader: Boolean
+	is_assigned: Boolean
+	vote: String
+	players_list: [PlayerInfo!]
+}
+
+type PlayerInfo {
+	id: ID!
+	name: String!
+	me: Boolean!
+	character: String!
+}
+
+type Room {
+	id: ID!
+	name: String!
+	host: String!
+	num_of_players: Int!
+	status: String!
+	players: [Player]
+	messages: [Message]
+	cup_results: [CupResult]
+	vote_results: [VoteResult]
+}
+
+type CupResult {
+	id: ID!
+	good:Int!
+	bad: Int!
+	player: [Int!]!
+}
+
+type VoteResult {
+	id: ID!
+	vote: [String!]!
+}
+
+type Message {
+	id: ID!
+	sender: Player!
+	body: String
+}
+
+type MessagePayload{
+	data: Message!
+}
+
+type RoomPayload{
+	data: [Room!]!
+}
+
+type PlayerPayload{
+	data: Player!
+}
+
+type RoomInfoPayload{
+	data: Room!
+}
+
+type PlayerInfoPayload{
+	data: [PlayerInfo!]!
 }
