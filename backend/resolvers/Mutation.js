@@ -241,9 +241,13 @@ const Mutation = {
       const name_existed = assignedNames.find(item => String(item) === String(target_name));
       if (name_existed) target.is_assigned = true;
       else target.is_assigned = false;
+
+      // refresh each player's vote
+      target.vote = 'null';
+
       await target.save();
     }
-
+    
     // publish the new room info
     const room_finished = await db.RoomModel.findOne({ name: roomName });
     const round =  Number(room_finished.status.split('-')[1]);
@@ -307,7 +311,7 @@ const Mutation = {
       const true_vote = room.players.filter(py => String(py.vote) === 'true');
       const false_vote = room.players.filter(py => String(py.vote) === 'false');
 
-      // refresh each player's is_leader / is_assigned /  vote
+      // refresh each player's is_leader / is_assigned
       const leader_idx = Number(room.players.findIndex(py => py.is_leader === true));
       const player_list = room.players.map(p => p.name);
       for (var i = 0; i < player_list.length; i++) {
@@ -320,8 +324,6 @@ const Mutation = {
             target.is_leader = true;
           }
         }
-        target.vote = 'null';
-        
         await target.save();
       }
 
@@ -332,7 +334,7 @@ const Mutation = {
         else room.status = `assign-${round}-${vote_round+1}`;
       }
       await room.save();
-
+      
       // publish the new room info
       const room_finished = await db.RoomModel.findOne({ name: roomName });
       pubsub.publish(`roomInfo ${roomName}`, {
@@ -341,8 +343,8 @@ const Mutation = {
         }
       });
     }
-    
-    return room.name;
+
+    return room.name;    
   },
 
   async cup( parent, { roomName, playerName, agree }, { db, pubsub }, info ) {
