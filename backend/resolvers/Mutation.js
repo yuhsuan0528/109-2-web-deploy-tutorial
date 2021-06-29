@@ -427,8 +427,9 @@ const Mutation = {
           await target.save();
         }
         // switching status - check if the game is ended
-        const total_bad_count = room_finished.cup_results.filter(cr => cr.bad > 0).length;
-        const total_good_count = room_finished.cup_results.length - total_bad_count;
+        let total_bad_count = room_finished.cup_results.filter(cr => cr.bad > 0).length;
+        if (round >= 4 && room_finished.cup_results[3].bad === 1) total_bad_count -= 1;
+        let total_good_count = room_finished.cup_results.length - total_bad_count;
         if (total_good_count >= 3) room_finished.status = 'assassin';
         else if (total_bad_count >= 3) room_finished.status = 'bad-win';
         else room_finished.status = `assign-${round+1}-1`;

@@ -1,5 +1,5 @@
 type Query {
-	rooms(playerName: String!, keyword: String!): [Room]
+	rooms(playerName: String!, keyword: String): [Room]
 	roomChat(roomName: String!): [Message]
 	roomInfo(roomName: String!): Room
 }
@@ -27,7 +27,7 @@ type Subscription {
 type Player {
 	id: ID!
 	name: String!
-	keyword: String!
+	keyword: String
 	room: Room
 	is_leader: Boolean
 	is_assigned: Boolean

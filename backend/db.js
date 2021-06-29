@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const playerSchema = new Schema({
   name: { type: String, required: true },
-  keyword: { type: String, required: true },
+  keyword: { type: String, required: false },
   room: { type: mongoose.Types.ObjectId, ref: 'Room' },
   is_leader: { type: Boolean, required: false },
   is_assigned: { type: Boolean, required: false },
