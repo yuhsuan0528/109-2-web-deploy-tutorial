@@ -6,11 +6,13 @@ export const CREATE_ROOM_MUTATION = gql`
     $roomName: String!
     $hostName: String!
     $num: Int!
+    $passwd: String!
   ) {
     createRoom (
       roomName: $roomName
       hostName: $hostName
       num: $num
+      passwd: $passwd
     )
   }
 `;
@@ -19,10 +21,12 @@ export const JOIN_ROOM_MUTATION = gql`
   mutation joinRoom(
   $roomName: String!
   $playerName: String!
+  $passwd: String!
   ) {
     joinRoom (
       roomName: $roomName
       playerName: $playerName
+      passwd: $passwd
     )
   }
 `;

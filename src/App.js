@@ -22,6 +22,9 @@ const App = () => {
   const [inRoom, setInRoom] = useState(false);
 
   const [roomName, setRoomName] = useState("");
+
+  const [searchRoomName, setSearchRoomName] = useState("t");
+  const [showAllRooms, setShowAllRooms] = useState(false);
   // console.log(roomName)
   
   const displayStatus = (payload) => {
@@ -45,13 +48,17 @@ const App = () => {
     }
   }, [signedIn]);
 
-   const { loading, error, data: roomsData, subscribeToMore } = useQuery(ROOM_QUERY);
+    const { loading, error, data: roomsData, subscribeToMore } = useQuery(ROOM_QUERY, {
+                                                                              variables:{ playerName: me, keyword: searchRoomName},
+                                                                            });
 
+   
 
    useLayoutEffect(() => {
     try {
       subscribeToMore({
         document: ROOM_SUBSCRIPTION,
+        variables:{ playerName: me},
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
           // console.log(subscriptionData.data)
@@ -64,12 +71,15 @@ const App = () => {
       // console.log(e);
     }
   }, [subscribeToMore, inRoom]);
-
-
+   console.log(me);
+   console.log(searchRoomName);
+      console.log(roomsData);
+   console.log(loading);
   return (
     <div >
       {signedIn ? inRoom ? (<PlayRoom me={me} displayStatus={displayStatus} roomName={roomName} setInRoom={setInRoom} roomsData={roomsData}/>) :
-        (<GameLobby me={me} setInRoom={setInRoom} inRoom={inRoom} displayStatus={displayStatus} setRoomName={setRoomName} data={roomsData} loading={loading}/>) : 
+        (<GameLobby me={me} setInRoom={setInRoom} inRoom={inRoom} displayStatus={displayStatus} setRoomName={setRoomName} 
+          data={roomsData} loading={loading} setSearchRoomName={setSearchRoomName} />) : 
         (<SignIn me={me} setMe={setMe} setSignedIn={setSignedIn} displayStatus={displayStatus} />)}
     </div>
     );

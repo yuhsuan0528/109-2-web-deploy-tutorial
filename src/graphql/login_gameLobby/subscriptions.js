@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 
 
 export const ROOM_SUBSCRIPTION = gql`
-  subscription room {
-      room {
+  subscription room( $playerName: String! ) {
+      room( playerName: $playerName ) {
         data {
           name
           host

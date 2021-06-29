@@ -56,6 +56,10 @@
   width: 450px;
 }
 
+.game-lobby-main-button{
+  margin: 3px;
+}
+
 
 /* ---------------
     RIGHT SIDE
@@ -82,7 +86,7 @@
 }
 
 .App-message{
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .App-message-me {
@@ -110,6 +114,13 @@
   background-color: #E27A8F;
 }
 
+button:disabled,
+button[disabled]{
+  cursor: not-allowed;
+  border: none;
+  background-color: #BBBDBE;
+  color: #ffffff;
+}
 
 .right-side-card{
   height:220px;
@@ -121,12 +132,17 @@
 
 
 .right-side-character-board {
-  padding: 15px;
+  margin-top: -10px;
+  padding: 10px;
 }
 
 .right-side-character-card {
   padding: 5px;
   width: 75px;
+}
+
+.right-side-button-row{
+  margin-left:17px;
 }
 
 .right-side-vote-area{
@@ -182,12 +198,7 @@
   background-color: #EAAC5E;
 }
 
-button:disabled,
-button[disabled]{
-  cursor: not-allowed;
-  background-color: #0099cc;
-  color: #ffffff;
-}
+
 
 .right-side-cup-card{
   width: 80px;

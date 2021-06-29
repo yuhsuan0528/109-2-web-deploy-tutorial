@@ -1,5 +1,5 @@
 import "../App.css";
-import { Button, Space, Divider, Tag, Modal, Input, Select } from "antd";
+import { Button, Space, Divider, Tag, Modal, Input, Select, Radio } from "antd";
 import { useState, useLayoutEffect } from "react";
 import { useMutation } from '@apollo/react-hooks';
 import { UserAddOutlined, FrownOutlined, UserOutlined, TagOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ import {
 
 const { Option } = Select;
 
-const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loading}) => {
+const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loading, setSearchRoomName}) => {
 
   const [isModalVisible_password, setIsModalVisible_password] = useState(false);
   const [isModalVisible_create, setIsModalVisible_create] = useState(false);
@@ -19,11 +19,20 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
 
   const [createRoomName, setCreateRoomName] = useState("");
   const [createRoomNum, setCreateRoomNum] = useState(5);
+  const [createRoomPW, setCreateRoomPW] = useState("");
+
+  const [targetRoomName, setTargetRoomName] = useState("");
+
+  const [inputName, setInputName] = useState("");
+  
 
   
   // handle with modals
-  const showModal = (type) => {
-    if(type === "password") setIsModalVisible_password(true);
+  const showModal = (type, name) => {
+    if(type === "password") {
+      setIsModalVisible_password(true);
+      setTargetRoomName(name);
+    }
     else if(type === "create") setIsModalVisible_create(true);
   };
 
@@ -36,8 +45,25 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
         });
       }
       else {
+        try{
+            await joinRoom({
+            variables:{
+                roomName: targetRoomName,
+                playerName: me,
+                passwd: passwordInput,
+              }
+            })
+            setRoomName(targetRoomName);
+            setInRoom(true);   
+          }
+          catch(e){
+            console.log(e)
+            displayStatus({
+                type:"error",
+                msg: e,
+              });
+          }
         setIsModalVisible_password(false);
-        setInRoom(true);
       }
     }
     else if (type === "create"){
@@ -54,6 +80,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
             roomName: createRoomName,
             hostName: me,
             num: createRoomNum,
+            passwd: createRoomPW,
           }
         })
         setRoomName(createRoomName);
@@ -67,9 +94,17 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
     else if(type === "create") setIsModalVisible_create(false);
   };
 
-
+  let usePassword=false;
   const handleCreateRoomName = (e) => {
     setCreateRoomName(e.target.value);
+  }
+
+  const handleCreateRoomPW = (e) => {
+    if(usePassword) setCreateRoomPW(e.target.value);
+  }
+
+  const handleSearchRoomName = (e) => {
+    setInputName(e.target.value)
   }
 
   const handleCreateRoomNum = (value) => {
@@ -89,7 +124,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
   const [joinRoom] = useMutation(JOIN_ROOM_MUTATION);
 
 
-  //console.log(data);
+console.log(data);
 
   const checkIsMemberInRoom = (name) => {
     for(var i=0; i<data.rooms.length; i++){    
@@ -115,7 +150,10 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
 
     <>
     <div className="game-lobby-main-block">
-      <Button bordered={false} size="large" onClick={() => showModal("create")}>建立房間</Button>
+      <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => showModal("create", '_')}>建立房間</Button>
+      <Input style={{ width: 200 }} placeholder="搜尋房間" onChange={handleSearchRoomName}/>
+      <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName(inputName)}>搜尋房間</Button>
+      <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName("")}>搜尋所有房間</Button>
       <Space direction="vertical" split={<Divider />}>
         { loading ?  (<div> Loading </div>) : 
           data.rooms.map( ({name, players, num_of_players}, index) => 
@@ -131,7 +169,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
                 <div className="game-lobby-button">
                   { 
                     players.length >= num_of_players && !checkIsMemberInRoom(name) ? <Button bordered={false} block={true} disabled={true} size="large"> <FrownOutlined /> 房間已滿</Button> :
-                    // password !== null ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password")}> <UserAddOutlined />加入房間</Button> :
+                    data.rooms.passwd !== "" ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password", name)}> <UserAddOutlined />加入房間</Button> :
                     <Button 
                     bordered={false} 
                     block={true} 
@@ -142,6 +180,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
                             variables:{
                                 roomName: name,
                                 playerName: me,
+                                passwd: "",
                               }
                             })
                             setRoomName(name);
@@ -189,6 +228,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
           <Option value="10">10</Option>
         </Select>
       </p>
+      <p> <Radio checked={usePassword}/> 啟用密碼 <Input.Password placeholder="Input password" onChange={handleCreateRoomPW}/> </p>
     </Modal>
     
 
