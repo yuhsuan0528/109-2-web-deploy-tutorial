@@ -2,7 +2,7 @@ import "../App.css";
 import { Button, Space, Divider, Tag, Modal, Input, Select, Switch } from "antd";
 import { useState, useLayoutEffect } from "react";
 import { useMutation } from '@apollo/react-hooks';
-import { UserAddOutlined, FrownOutlined, UserOutlined, TagOutlined } from '@ant-design/icons';
+import { UserAddOutlined, FrownOutlined, UserOutlined, TagOutlined, LockOutlined } from '@ant-design/icons';
 import {
   CREATE_ROOM_MUTATION,
   JOIN_ROOM_MUTATION
@@ -176,6 +176,10 @@ console.log(data);
                   <div> 
                     <Tag color="#A6C2CE" icon={<UserOutlined />}> {players.length}/{num_of_players} </Tag>
                     <Tag color="#BCBCBC" ><TagOutlined />{` room_${index}`}</Tag>
+                    {
+                      passwd === "#$%#$%#$%#$%#$%#$%#$%" ? <div></div>: 
+                      <Tag color="#EA7171" ><LockOutlined /> Password </Tag>
+                    }
                   </div>
                 </p>
                 
