@@ -1,8 +1,12 @@
 const Subscription = {
   
   room: {
-    subscribe( parent, args, { db, pubsub }, info ) {
-      return pubsub.asyncIterator(`all_rooms`);
+    subscribe( parent, { playerName }, { db, pubsub }, info ) {
+      let player = db.PlayerModel.findOne({name: playerName});
+      if (!player) {
+        throw new Error('Player not found!');
+      }
+      return pubsub.asyncIterator(`rooms ${playerName}`);
     },
   },
   

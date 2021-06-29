@@ -244,10 +244,17 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                   }}
                 onCancel={() => handleCancel("conirmCloseRoom")}
               >
-              <button 
+              {
+                startGame ? 
+                 <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={() => setVisible_confirmCloseRoom(true)} disabled>關閉房間</button>  : 
+                   <button 
                   className="right-side-leave-room-button" 
                   bordered={false}
                   onClick={() => setVisible_confirmCloseRoom(true)}>關閉房間</button> 
+              }
                   </Popconfirm> : 
                 <Popconfirm
                 title="確定要離開房間嗎？"
@@ -269,10 +276,18 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                   }}
                 onCancel={() => handleCancel("conirmLeaveRoom")}
                 > 
-                <button 
+                {
+                  gameStarted ? <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={()=>setVisible_confirmLeaveRoom(true)} disabled>離開房間</button> : 
+                  <button 
                   className="right-side-leave-room-button" 
                   bordered={false}
                   onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</button>
+                }
+                
+
                   </Popconfirm>
                   }
                
@@ -303,8 +318,8 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
 
           </Card>
             
-          
-            <Space>
+          <div className="right-side-button-row">
+            <Space >
               <Button className="right-side-button" bordered={false} onClick={() => showModal("cup")}>任務結果</Button>
               <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")}>投票紀錄</Button>
               <Button className="right-side-button" bordered={false} onClick={() => showModal("rule")}>遊戲規則</Button>
@@ -337,6 +352,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 <Button className="right-side-button" bordered={false} disabled>開始遊戲</Button> 
               }
             </Space>
+          </div>
           </div>
             <ChatRoom me={me} displayStatus={displayStatus} roomName={roomName}/>
 
@@ -385,10 +401,11 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 </div>
                 <div>
                 {
-                  cupResults[Object.keys(cupResults)[Object.keys(cupResults).length-1]].player.map((number, index) =>
-                    <Tag color="volcano">{`玩家${number+1}`}</Tag>
-                  )
+                  cupResults[Object.keys(cupResults)[Object.keys(cupResults).length-1]].player.sort().map((number, index) =>{
+                    return( <Tag color="volcano">{`玩家${number+1}`}</Tag> )
+                  })
                 }
+                
                 </div>
               </Space> :
               <Space split={<Divider type="vertical" />}>

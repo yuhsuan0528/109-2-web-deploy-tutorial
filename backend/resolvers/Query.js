@@ -1,7 +1,17 @@
 const Query = {
   
-  async rooms ( parent, args, { db }, info ) {
-    const rooms = await db.RoomModel.find();
+  async rooms ( parent, { playerName, keyword }, { db }, info ) {
+    if (!playerName) {
+      throw new Error("Missing PlayerName.");
+    }
+    let search_key = '';
+    if (keyword) search_key = keyword;
+    const rooms = await db.RoomModel.find({ name: {'$regex': String(search_key), '$options': 'i'} });
+    const player = await db.PlayerModel.findOne({ name: playerName });
+    if (player) {
+      player.keyword = search_key;
+      await player.save();
+    }
     return rooms;
   },
   
