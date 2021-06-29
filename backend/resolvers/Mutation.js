@@ -28,6 +28,7 @@ const Mutation = {
   async createRoom( parent, { roomName, hostName, num, passwd }, { db, pubsub }, info ) {
     if (!roomName) throw new Error("Missing room name.");
     if (!hostName) throw new Error("Missing host name.");
+    if (!passwd) throw new Error("Missing password.");
     
     const host = await validatePlayer(db, hostName);
     const room_existing = await db.RoomModel.findOne({ name: roomName });
@@ -65,6 +66,7 @@ const Mutation = {
   async joinRoom( parent, { roomName, playerName, passwd }, { db, pubsub }, info ) {
     if (!roomName) throw new Error("Missing room name.");
     if (!playerName) throw new Error("Missing player name.");
+    if (!passwd) throw new Error("Missing password.");
 
     const player = await validatePlayer(db, playerName);
     const room = await db.RoomModel.findOne({ name: roomName });

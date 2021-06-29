@@ -6,13 +6,13 @@ const Query = {
     }
     let search_key = '';
     if (keyword) search_key = keyword;
-    const rooms = await db.RoomModel.find({ name: {'$regex': String(search_key), '$options': 'i'} });
+    const room_list = await db.RoomModel.find({ name: {'$regex': String(search_key), '$options': 'i'} });
     const player = await db.PlayerModel.findOne({ name: playerName });
     if (player) {
       player.keyword = search_key;
       await player.save();
     }
-    return rooms;
+    return room_list;
   },
   
   async roomChat( parent, { roomName }, { db }, info ) {
