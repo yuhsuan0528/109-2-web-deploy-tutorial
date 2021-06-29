@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 
 const playerSchema = new Schema({
   name: { type: String, required: true },
+  keyword: { type: String, required: true },
   room: { type: mongoose.Types.ObjectId, ref: 'Room' },
   is_leader: { type: Boolean, required: false },
   is_assigned: { type: Boolean, required: false },
@@ -20,6 +21,7 @@ const playerInfoSchema = new Schema({
 const roomSchema = new Schema({
   name: { type: String, required: true },
   host: { type: String, required: true },
+  passwd: { type: String, required: true },
   num_of_players: { type: Number, required: true },
   status: { type: String, required: true },
   players: [{ type: mongoose.Types.ObjectId, ref: 'Player' }],

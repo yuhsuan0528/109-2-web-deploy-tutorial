@@ -1,13 +1,13 @@
 type Query {
-	rooms: [Room]
+	rooms(playerName: String!, keyword: String!): [Room]
 	roomChat(roomName: String!): [Message]
 	roomInfo(roomName: String!): Room
 }
 
 type Mutation {
 	logIn(name: String!): String!
-	createRoom(roomName: String!, hostName: String!, num: Int!): String!
-	joinRoom(roomName: String!, playerName: String!): String!
+	createRoom(roomName: String!, hostName: String!, num: Int!, passwd: String!): String!
+	joinRoom(roomName: String!, playerName: String!, passwd: String!): String!
 	createMessage(roomName: String!, playerName: String!, body: String): Message!
 	startGame(roomName: String!, playerName: String!): String!
 	assign(roomName: String!, leaderName: String!, assignedNames: [String!]!): String!
@@ -19,7 +19,7 @@ type Mutation {
 }
 
 type Subscription {
-	room: RoomPayload!
+	room(playerName: String!): RoomPayload!
 	message(roomName: String!): MessagePayload!
 	roomInfo(roomName: String!): RoomInfoPayload!
 }
@@ -27,6 +27,7 @@ type Subscription {
 type Player {
 	id: ID!
 	name: String!
+	keyword: String!
 	room: Room
 	is_leader: Boolean
 	is_assigned: Boolean
@@ -45,6 +46,7 @@ type Room {
 	id: ID!
 	name: String!
 	host: String!
+	passwd: String!
 	num_of_players: Int!
 	status: String!
 	players: [Player]
@@ -76,7 +78,7 @@ type MessagePayload{
 }
 
 type RoomPayload{
-	data: [Room!]!
+	data: [Room]
 }
 
 type RoomInfoPayload{

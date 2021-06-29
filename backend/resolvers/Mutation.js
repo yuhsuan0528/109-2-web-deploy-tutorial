@@ -2,7 +2,7 @@
 const validatePlayer = async (db, name) => {
   const existing = await db.PlayerModel.findOne({ name: name });
   if (existing) return existing;
-  else return new db.PlayerModel({ name: name }).save();
+  else return new db.PlayerModel({ name: name, keyword: '' }).save();
 };
 
 const shuffle = (array)  => {
@@ -25,7 +25,7 @@ const Mutation = {
     return player.name;
   },
 
-  async createRoom( parent, { roomName, hostName, num }, { db, pubsub }, info ) {
+  async createRoom( parent, { roomName, hostName, num, passwd }, { db, pubsub }, info ) {
     if (!roomName) throw new Error("Missing room name.");
     if (!hostName) throw new Error("Missing host name.");
     
@@ -34,7 +34,12 @@ const Mutation = {
     if (room_existing) {
       throw new Error("This room name has been created and still exists.");
     }
-    const room = await new db.RoomModel({ name: roomName, host: hostName, num_of_players: num, status: "pre-game" });
+    const room = await new db.RoomModel({
+                                name: roomName,
+                                host: hostName,
+                                passwd: passwd,
+                                num_of_players: num,
+                                status: "pre-game" });
     
     room.players.push(host._id);
     host.room = room._id;
@@ -43,8 +48,8 @@ const Mutation = {
     await host.save();
     await room.save();
 
-    const all_rooms = await db.RoomModel.find({});
-    pubsub.publish(`all_rooms`, {
+    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(host.keyword), '$options': 'i'} });
+    pubsub.publish(`rooms ${hostName}`, {
       room: {
         data: all_rooms,
       }
@@ -57,7 +62,7 @@ const Mutation = {
     return roomName;
   },
 
-  async joinRoom( parent, { roomName, playerName }, { db, pubsub }, info ) {
+  async joinRoom( parent, { roomName, playerName, passwd }, { db, pubsub }, info ) {
     if (!roomName) throw new Error("Missing room name.");
     if (!playerName) throw new Error("Missing player name.");
 
@@ -73,6 +78,10 @@ const Mutation = {
       if (room.players.length >= room.num_of_players) {
         throw new Error("Sorry, this room is full.");
       }
+      // check if the password is correct
+      if (room.passwd !== passwd) {
+        throw new Error("Sorry, the password is incorrect.");
+      }
       player.room = room._id;
       player.is_leader = false;
       room.players.push(player._id);
@@ -80,8 +89,8 @@ const Mutation = {
     await player.save();
     await room.save();
     
-    const all_rooms = await db.RoomModel.find({});
-    pubsub.publish(`all_rooms`, {
+    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
+    pubsub.publish(`rooms ${playerName}`, {
       room: {
         data: all_rooms,
       }
@@ -247,7 +256,7 @@ const Mutation = {
 
       await target.save();
     }
-    
+
     // publish the new room info
     const room_finished = await db.RoomModel.findOne({ name: roomName });
     const round =  Number(room_finished.status.split('-')[1]);
@@ -534,8 +543,8 @@ const Mutation = {
         data: room_finished,
       }
     });
-    const all_rooms = await db.RoomModel.find({});
-    pubsub.publish(`all_rooms`, {
+    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
+    pubsub.publish(`rooms ${playerName}`, {
       room: {
         data: all_rooms,
       }
@@ -614,8 +623,8 @@ const Mutation = {
     });
 
     // publish the new room info
-    const all_rooms = await db.RoomModel.find({});
-    pubsub.publish(`all_rooms`, {
+    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
+    pubsub.publish(`rooms ${playerName}`, {
       room: {
         data: all_rooms,
       }
