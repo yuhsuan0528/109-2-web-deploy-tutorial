@@ -37,7 +37,7 @@ const Mutation = {
     const room = await new db.RoomModel({
                                 name: roomName,
                                 host: hostName,
-                                passwd: passwd,
+                                passwd: String(passwd),
                                 num_of_players: num,
                                 status: "pre-game" });
     
@@ -79,7 +79,7 @@ const Mutation = {
         throw new Error("Sorry, this room is full.");
       }
       // check if the password is correct
-      if (room.passwd !== passwd) {
+      if (String(room.passwd) !== String(passwd)) {
         throw new Error("Sorry, the password is incorrect.");
       }
       player.room = room._id;
