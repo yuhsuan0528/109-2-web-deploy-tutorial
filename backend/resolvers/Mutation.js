@@ -79,7 +79,7 @@ const Mutation = {
         throw new Error("Sorry, this room is full.");
       }
       // check if the password is correct
-      if (String(room.passwd) !== String(passwd)) {
+      if (room.passwd && (String(room.passwd) !== String(passwd))) {
         throw new Error("Sorry, the password is incorrect.");
       }
       player.room = room._id;
