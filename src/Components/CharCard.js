@@ -1,7 +1,6 @@
 import React from 'react'
 import {message} from 'antd'
-import {useState, useEffect, useRef} from 'react'
-import { set } from 'mongoose'
+import {useState, useEffect} from 'react'
 
 function CharCard({cardStatus, cardParams}) {
     const {me, twoRow, membersToChoose, setMembersToChoose, membersChosen, setMembersChosen, roomInfo, assassinate} = cardParams
@@ -19,7 +18,7 @@ function CharCard({cardStatus, cardParams}) {
         'M': 'images/merlin_morgana.jpg',
         'null': 'images/character_unknown.jpg',
         'O': 'images/bad_people_oberon.jpg',
-        'MO': 'bad_people_mordred.jpg'
+        'MO': 'images/bad_people_mordred.jpg'
     }
 
     const voteDict = {
@@ -37,18 +36,11 @@ function CharCard({cardStatus, cardParams}) {
     } else if (isAssigned) {
         teamDir = 'images/marker_team.jpg'
     }
-
-    let cardClass = "left-side-character-card-big"
-    let markerClass = "marker-big"
-    if (twoRow){
-        cardClass="left-side-character-card-small"
-        markerClass = "marker-small"
-    }
     const clickHandler = () => {
         const self = roomInfo.players.find(player => player.name === me)
         if(roomInfo.status.includes('assign') && self.is_leader){
             if (membersToChoose === 0 && !selected) {
-                message.info('Team is full!')
+                message.info('隊伍人已經滿了!')
             } else {
                 setSelected(!selected)
             }
@@ -78,15 +70,27 @@ function CharCard({cardStatus, cardParams}) {
     useEffect(() =>{
         setSelected(false)
     },[roomInfo.status])
-    const me_name = isMe? `${name}⭐`:name 
-    return (
-        <>
-            <p align='center' style={{lineHeight: '8px'}}>{me_name}</p>
-            <img className={cardClass} src={charDir} onClick={clickHandler}/><br />
-            <img className={markerClass} src={voteDir}/>
-            <img className={markerClass} src={teamDir}/>
-        </>
-    )
+    const me_name = isMe? `${name}⭐`:name
+    if (!twoRow) {
+        return (
+            <>
+                <p align='center' style={{lineHeight: '8px', paddingLeft: '5px'}}>{me_name}</p>
+                <img className="left-side-character-card-big" src={charDir} onClick={clickHandler}/><br />
+                <img className="marker-big" src={voteDir}/>
+                <img className="marker-big" src={teamDir}/>
+            </>
+        )
+    } else {
+        return (
+            <>
+                <p align='center' style={{lineHeight: '8px', paddingRight: '40px'}}>{me_name}</p>
+                <img className="left-side-character-card-small" src={charDir} onClick={clickHandler}/>
+                <img className="marker-small" src={voteDir}/>
+                <img className="marker-small" src={teamDir}/>
+            </>
+        )
+    }
+    
 }
 
 export default CharCard

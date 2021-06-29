@@ -9,8 +9,8 @@ function Players({playersParams}) {
     useEffect(() => {
         const statusMe = status.find(player => player.name === me)
         console.log(statusMe)
-        if (statusMe){
-            if (statusMe.isLeader) message.info(`目前隊員: ${membersChosen}`)
+        if (statusMe && roomInfo){
+            if (statusMe.isLeader && roomInfo.status.includes('assign')) message.info(`目前隊員: ${membersChosen}`)
         }
         
     },[membersChosen])
@@ -26,7 +26,11 @@ function Players({playersParams}) {
         assassinate:assassinate
     }
 
-    if (status.length<=6){
+    useEffect(() => {
+        if (status.length > 6) setTwoRow(true)
+    },[status.length])
+
+    if (!twoRow){
         return (
             <>
                 <br />
@@ -41,12 +45,10 @@ function Players({playersParams}) {
         )
     }
     else{
-        setTwoRow(true)
         const top = status.slice(0,5)
         const bottom = status.slice(5)
         return(
             <>
-                <br />
                 <table className="player-section" border="0">
                     <tbody>
                         <tr>
