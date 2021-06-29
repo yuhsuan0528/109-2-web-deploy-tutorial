@@ -8,8 +8,12 @@ function Players({playersParams}) {
     let twoRow = false
     const notInitialRender = useRef(false)
     useEffect(() => {
-        if (notInitialRender.current) message.info(`Current members: ${membersChosen}`)
+        const statusMe = status.find(player => player.name === me)
+        if (statusMe){
+            if (notInitialRender.current && statusMe.isLeader) message.info(`Current members: ${membersChosen}`)
+        }
         else notInitialRender.current = true
+        
     },[membersChosen])
 
     const cardParams = {
@@ -25,7 +29,7 @@ function Players({playersParams}) {
 
     if (status.length<=6){
         return (
-            <table className="player-section" border="0">
+            <table className="player-section" style={{border: "1 #264653"}}>
                 <tbody>
                     <tr>
                         {status.map((data, index) => (<td><CharCard key={index} cardStatus={data} cardParams={cardParams}/></td>))}

@@ -88,7 +88,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
   },[roomInfo.players])
 
   useEffect(() => {
-    console.log(playerStatus)
+    // console.log(playerStatus)
   },[playerStatus])
 
   useEffect(()=>{

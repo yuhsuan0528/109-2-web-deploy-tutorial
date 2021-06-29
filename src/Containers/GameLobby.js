@@ -100,15 +100,15 @@ const GameLobby = ({me, setInRoom, displayStatus, setRoomName}) => {
   const [createRoom] = useMutation(CREATE_ROOM_MUTATION);
   const [joinRoom] = useMutation(JOIN_ROOM_MUTATION);
 
-  console.log(data);
+  // console.log(data);
    const checkIsMemberInRoom = (name) => {
     for(var i=0; i<data.rooms.length; i++){    
       if(data.rooms[i].name === name){
-        console.log(data.rooms[i].players)
+        // console.log(data.rooms[i].players)
         // console.log(data.rooms[i].players.length)
         for(var j=0; j<data.rooms[i].players.length; j++){
-          console.log(me)
-          console.log(data.rooms[i].players[j].name === me)
+          // console.log(me)
+          // console.log(data.rooms[i].players[j].name === me)
           if(data.rooms[i].players[j].name === me){
             return true
           }

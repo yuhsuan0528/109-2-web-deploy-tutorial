@@ -14,7 +14,7 @@ function CharCard({cardStatus, cardParams}) {
         'BM': 'images/bad_people_morgana.jpg',
         'A': 'images/bad_people_assassin.jpg',
         'G': 'images/good_people_normal_1.jpg',
-        'B': 'images/bad_people_normal_1.jpg',
+        'B': 'images/bad_people_unknown.jpg',
         'M': 'images/merlin_morgana.jpg',
         'null': 'images/character_unknown.jpg',
     }
@@ -22,7 +22,7 @@ function CharCard({cardStatus, cardParams}) {
     const voteDict = {
         'true': 'images/symbol_vote_yay.jpg',
         'false': 'images/symbol_vote_nay.jpg',
-        'null': ''
+        'null': 'images/symbol_vote_unknown.jpg'
     }
 
     const charDir = charDict[character]
@@ -30,8 +30,7 @@ function CharCard({cardStatus, cardParams}) {
 
     if (isLeader) {
         teamDir = 'images/marker_leader.jpg'
-    }
-    else if (isAssigned) {
+    } else if (isAssigned) {
         teamDir = 'images/marker_team.jpg'
     }
 

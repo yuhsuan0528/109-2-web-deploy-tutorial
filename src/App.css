@@ -205,9 +205,11 @@ button[disabled]{
 
 
 .left-side-character-card-big {
-  padding-left: 20px;
-  padding-right: 20px;
-  width: 130px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 25px;
+  padding-right: 25px;
+  width: 150px;
 }
 
 .left-side-character-card-small {
@@ -232,7 +234,7 @@ button[disabled]{
 
 .marker-big {
   padding-left: 20px;
-  width: 55px;
+  width: 60px;
 }
 
 .marker-small {
@@ -241,81 +243,81 @@ button[disabled]{
 }
 
 .marker-score-1 {
-  width: 107px;
+  width: 110px;
   position:absolute;
-  top: 366px;
-  left: 151px;
+  top: 359px;
+  left: 146px;
   z-index: 2;
 }
 
 .marker-score-2 {
-  width: 107px;
+  width: 110px;
   position:absolute;
-  top: 366px;
-  left: 275px;
+  top: 359px;
+  left: 274px;
   z-index: 2;
 }
 
 .marker-score-3 {
-  width: 107px;
+  width: 110px;
   position:absolute;
-  top: 366px;
-  left: 397px;
+  top: 359px;
+  left: 398px;
   z-index: 2;
 }
 
 .marker-score-4 {
-  width: 107px;
+  width: 110px;
   position:absolute;
-  top: 366px;
-  left: 522px;
+  top: 359px;
+  left: 529px;
   z-index: 2;
 }
 
 .marker-score-5 {
-  width: 107px;
+  width: 110px;
   position:absolute;
-  top: 366px;
-  left: 645px;
+  top: 359px;
+  left: 655px;
   z-index: 2;
 }
 
 .marker-round-1 {
-  width: 83px;
+  width: 84px;
   position:absolute;
-  top: 552px;
-  left: 151px;
+  top: 553px;
+  left: 148px;
   z-index: 2;
 }
 
 .marker-round-2 {
-  width: 83px;
+  width: 84px;
   position:absolute;
-  top: 552px;
-  left: 251px;
+  top: 553px;
+  left: 250px;
   z-index: 2;
 }
 
 .marker-round-3 {
-  width: 83px;
+  width: 84px;
   position:absolute;
-  top: 552px;
-  left: 351px;
+  top: 553px;
+  left: 353px;
   z-index: 2;
 }
 
 .marker-round-4 {
-  width: 83px;
+  width: 84px;
   position:absolute;
-  top: 552px;
-  left: 452px;
+  top: 553px;
+  left: 456px;
   z-index: 2;
 }
 
 .marker-round-5 {
-  width: 83px;
+  width: 84px;
   position:absolute;
-  top: 552px;
-  left: 552px;
+  top: 553px;
+  left: 558px;
   z-index: 2;
 }
