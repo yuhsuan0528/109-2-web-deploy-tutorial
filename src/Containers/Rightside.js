@@ -1,6 +1,6 @@
 import "../App.css";
 import { useState, useEffect } from "react";
-import { Button, Modal, Space, Card, message, Spin, Popconfirm, notification  } from "antd";
+import { Button, Modal, Space, Card, message, Spin, Popconfirm, Tag, Divider } from "antd";
 import { useMutation } from '@apollo/react-hooks';
 import ChatRoom from "../Components/rightside/ChatRoom.js";
 import VoteTable from "../Components/rightside/VoteTable.js";
@@ -32,6 +32,8 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
   const [isModalVisible_vote, setIsModalVisible_vote] = useState(false);
   const [isModalVisible_cup, setIsModalVisible_cup] = useState(false);
   const [isModalVisible_rule, setIsModalVisible_rule] = useState(false);
+  const [isModalVisible_result, setIsModalVisible_result] = useState(false);
+
   const [visible_confirmCloseRoom, setVisible_confirmCloseRoom] = useState(false);
   const [visible_confirmLeaveRoom, setVisible_confirmLeaveRoom] = useState(false);
 
@@ -57,12 +59,14 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
     if(type === "vote") setIsModalVisible_vote(false);
     else if(type === "cup") setIsModalVisible_cup(false);
     else if(type === "rule") setIsModalVisible_rule(false);
+    else if(type === "result") setIsModalVisible_result(false);
   };
 
   const handleCancel = (type) => {
     if(type === "vote") setIsModalVisible_vote(false);
     else if(type === "cup") setIsModalVisible_cup(false);
     else if(type === "rule") setIsModalVisible_rule(false);
+    else if(type === "result") setIsModalVisible_result(false);
     else if(type === "conirmCloseRoom") setVisible_confirmCloseRoom(false);
     else if(type === "conirmLeaveRoom") setVisible_confirmLeaveRoom(false);
   };
@@ -129,7 +133,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
   }
 
   useEffect(()=>{
-    if (checkRoomClosed()){
+    if (checkRoomClosed() && Object.keys(roomInfo).length !== 0){
         setCardContent("roomClosed");
       }
   },[roomsData])
@@ -196,16 +200,29 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
     //console.log(roomInfo) 
   }, [roomInfo])
 
-
-  // for vote and cup table
+   // for vote and cup table
   const cupResults = roomInfo.cup_results;
   const voteResults = roomInfo.vote_results;
+
+  useEffect(()=>{
+    if(Object.keys(roomInfo).length !== 0){
+      //console.log(cupResults)
+      //console.log(voteResults)
+      const [status, round, time] = roomInfo.status.split('-');
+      if(status === 'cup' || (status === 'assign' && roomInfo.status !== 'assign-1-1')){
+        setIsModalVisible_result(true)
+      } 
+    }
+  },[roomInfo.status])
+
+
+ 
 
   return (
     <>
           
           <div className="right-side-top-area">
-
+            房間名稱：{roomName}
             { roomInfo.host === me ?  
               <Popconfirm
                 title="確定要關閉房間嗎？"
@@ -258,6 +275,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                   onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</button>
                   </Popconfirm>
                   }
+               
            </div>
            <div className="right-side-character-board">
 
@@ -285,7 +303,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
 
           </Card>
             
-            
+          
             <Space>
               <Button className="right-side-button" bordered={false} onClick={() => showModal("cup")}>任務結果</Button>
               <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")}>投票紀錄</Button>
@@ -345,9 +363,56 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
             width={800}>
               <Rule/>
             </Modal>
-    </>);
-    
-  
+
+            <Modal title="結果" 
+            visible={isModalVisible_result} 
+            onOk={() => handleOk("result")} 
+            onCancel={() => handleCancel("result")} 
+            width={800}>
+
+            { Object.keys(roomInfo).length === 0 ? <div></div> :
+              roomInfo.status.includes('assign-1-1') ?  <div></div> :
+              roomInfo.status.includes('assign') && (roomInfo.status.includes('-2-1') || roomInfo.status.includes('-3-1')
+              || roomInfo.status.includes('-4-1') || roomInfo.status.includes('-5-1')) ?
+              <Space>
+                <div>
+                  {new Array(cupResults[Object.keys(cupResults)[Object.keys(cupResults).length-1]].good).fill(null).map((_, index) => 
+                    <img className="right-side-cup-card" src="images/mission_success.jpg" key={`cup_card_good_${index}`} alt="1"/>
+                  )}
+                  {new Array(cupResults[Object.keys(cupResults)[Object.keys(cupResults).length-1]].bad).fill(null).map((_, index) => 
+                    <img className="right-side-cup-card" src="images/mission_fail.jpg" key={`cup_card_bad_${index}`} alt="1"/>
+                  )}
+                </div>
+                <div>
+                {
+                  cupResults[Object.keys(cupResults)[Object.keys(cupResults).length-1]].player.map((number, index) =>
+                    <Tag color="volcano">{`玩家${number+1}`}</Tag>
+                  )
+                }
+                </div>
+              </Space> :
+              <Space split={<Divider type="vertical" />}>
+              
+              {
+                voteResults.length === 0 || voteResults === undefined ? <div/> :
+                new Array(roomInfo.num_of_players).fill(null).map((_, index) => 
+                <Space direction="vertical">
+                <div style={{fontSize:"20px"}}>{roomInfo.players[index].name}</div>
+                <div>
+                { 
+                  voteResults[voteResults.length-1].vote[voteResults[voteResults.length-1].vote.length-1][index] === 'T' ? 
+                  <img className="right-side-cup-card" src="images/symbol_vote_yay.jpg" key={`vote_yay_${index}`} alt="1"/>:
+                  <img className="right-side-cup-card" src="images/symbol_vote_nay.jpg" key={`vote_nay_${index}`} alt="1"/>
+                }
+                </div>
+                </Space>
+                )
+              }
+              
+              </Space>
+            }
+            </Modal>
+    </>)
 };
 
 export default Rightside;
@@ -373,4 +438,10 @@ const cupResults = [
       ['W','W','W','W','W']
     ]   
   ]
+
+  { 
+                  voteResults[voteResults.length-1].vote[voteResults[voteResults.length-1].vote.length-1][index] === 'T' ? 
+                  <img className="right-side-cup-card" src="images/symbol_vote_yay.jpg" key={`vote_yay_${index}`} alt="1"/>:
+                  <img className="right-side-cup-card" src="images/symbol_vote_nay.jpg" key={`vote_nay_${index}`} alt="1"/>
+                }
   */
