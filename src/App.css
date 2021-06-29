@@ -221,15 +221,7 @@ button[disabled]{
 .player-section {
   margin-left: auto;
   margin-right: auto;
-  padding-top: 10px;
-}
-
-.board {
-  width: 650px;
-  position:absolute;
-  top: 230px;
-  left: 130px;
-  z-index: 1;
+  padding-top: 5px;
 }
 
 .marker-big {
@@ -242,10 +234,18 @@ button[disabled]{
   width: 40px;
 }
 
+.board {
+  width: 650px;
+  position:absolute;
+  top: 235px;
+  left: 130px;
+  z-index: 1;
+}
+
 .marker-score-1 {
   width: 110px;
   position:absolute;
-  top: 359px;
+  top: 364px;
   left: 146px;
   z-index: 2;
 }
@@ -253,7 +253,7 @@ button[disabled]{
 .marker-score-2 {
   width: 110px;
   position:absolute;
-  top: 359px;
+  top: 364px;
   left: 274px;
   z-index: 2;
 }
@@ -261,7 +261,7 @@ button[disabled]{
 .marker-score-3 {
   width: 110px;
   position:absolute;
-  top: 359px;
+  top: 364px;
   left: 398px;
   z-index: 2;
 }
@@ -269,7 +269,7 @@ button[disabled]{
 .marker-score-4 {
   width: 110px;
   position:absolute;
-  top: 359px;
+  top: 364px;
   left: 529px;
   z-index: 2;
 }
@@ -277,7 +277,7 @@ button[disabled]{
 .marker-score-5 {
   width: 110px;
   position:absolute;
-  top: 359px;
+  top: 364px;
   left: 655px;
   z-index: 2;
 }
@@ -285,7 +285,7 @@ button[disabled]{
 .marker-round-1 {
   width: 84px;
   position:absolute;
-  top: 553px;
+  top: 558px;
   left: 148px;
   z-index: 2;
 }
@@ -293,7 +293,7 @@ button[disabled]{
 .marker-round-2 {
   width: 84px;
   position:absolute;
-  top: 553px;
+  top: 558px;
   left: 250px;
   z-index: 2;
 }
@@ -301,7 +301,7 @@ button[disabled]{
 .marker-round-3 {
   width: 84px;
   position:absolute;
-  top: 553px;
+  top: 558px;
   left: 353px;
   z-index: 2;
 }
@@ -309,7 +309,7 @@ button[disabled]{
 .marker-round-4 {
   width: 84px;
   position:absolute;
-  top: 553px;
+  top: 558px;
   left: 456px;
   z-index: 2;
 }
@@ -317,7 +317,7 @@ button[disabled]{
 .marker-round-5 {
   width: 84px;
   position:absolute;
-  top: 553px;
+  top: 558px;
   left: 558px;
   z-index: 2;
 }

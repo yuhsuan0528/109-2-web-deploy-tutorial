@@ -17,6 +17,8 @@ function CharCard({cardStatus, cardParams}) {
         'B': 'images/bad_people_unknown.jpg',
         'M': 'images/merlin_morgana.jpg',
         'null': 'images/character_unknown.jpg',
+        'O': 'images/bad_people_oberon.jpg',
+        'MO': 'bad_people_mordred.jpg'
     }
 
     const voteDict = {
@@ -29,7 +31,8 @@ function CharCard({cardStatus, cardParams}) {
     const voteDir = voteDict[vote]
 
     if (isLeader) {
-        teamDir = 'images/marker_leader.jpg'
+        if (isAssigned) teamDir = 'images/marker_leader_team.jpg'
+        else teamDir = 'images/marker_leader.jpg'
     } else if (isAssigned) {
         teamDir = 'images/marker_team.jpg'
     }
@@ -76,7 +79,7 @@ function CharCard({cardStatus, cardParams}) {
     return (
         <>
             <p align='center' style={{lineHeight: '12px'}}>{me_name}</p>
-            <img className={cardClass} src={charDir} onClick={clickHandler}/>
+            <img className={cardClass} src={charDir} onClick={clickHandler}/><br />
             <img className={markerClass} src={voteDir}/>
             <img className={markerClass} src={teamDir}/>
         </>

@@ -10,7 +10,7 @@ function Players({playersParams}) {
     useEffect(() => {
         const statusMe = status.find(player => player.name === me)
         if (statusMe){
-            if (notInitialRender.current && statusMe.isLeader) message.info(`Current members: ${membersChosen}`)
+            if (notInitialRender.current && statusMe.isLeader) message.info(`目前隊員: ${membersChosen}`)
         }
         else notInitialRender.current = true
         
