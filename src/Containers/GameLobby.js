@@ -58,11 +58,10 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
             setInRoom(true);   
           }
           catch(e){
-            console.log(e)
             displayStatus({
-                type:"error",
-                msg: e,
-              });
+              type:"error",
+              msg: "密碼錯誤!!!QQ",
+            });
           }
         setIsModalVisible_password(false);
       }
@@ -76,6 +75,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
       }
       else{
         setIsModalVisible_create(false);
+        console.log(createRoomPW);
         await createRoom({
           variables:{
             roomName: createRoomName,
@@ -159,15 +159,17 @@ console.log(data);
 
     <>
     <div className="game-lobby-main-block">
+      <div className="game-lobby-top-area">
       <Space>
         <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => showModal("create", '_')}>建立房間</Button>
         <Input style={{ width: 200 }} placeholder="搜尋房間" onChange={handleSearchRoomName}/>
         <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName(inputName)}>搜尋房間</Button>
-        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName('')}>搜尋所有房間</Button>
+        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName('')}>顯示所有房間</Button>
       </Space>
+      </div>
       <Space direction="vertical" split={<Divider />}>
         { loading?  (<div> Loading </div>) : 
-          data.rooms.map( ({name, players, num_of_players}, index) => 
+          data.rooms.map( ({name, players, num_of_players, passwd}, index) => 
             (<Space key={`room${index}`}>
               <div className="game-lobby-room">
                 <p className="game-lobby-room-name"> {name}
@@ -180,7 +182,7 @@ console.log(data);
                 <div className="game-lobby-button">
                   { 
                     players.length >= num_of_players && !checkIsMemberInRoom(name) ? <Button bordered={false} block={true} disabled={true} size="large"> <FrownOutlined /> 房間已滿</Button> :
-                    data.rooms.passwd !== "#$%#$%#$%#$%#$%#$%#$%" ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password", name)}> <UserAddOutlined />加入房間</Button> :
+                    passwd !== "#$%#$%#$%#$%#$%#$%#$%" ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password", name)}> <UserAddOutlined />加入房間</Button> :
                     <Button 
                     bordered={false} 
                     block={true} 

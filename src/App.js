@@ -23,7 +23,7 @@ const App = () => {
 
   const [roomName, setRoomName] = useState("");
 
-  const [searchRoomName, setSearchRoomName] = useState("t");
+  const [searchRoomName, setSearchRoomName] = useState("");
   const [showAllRooms, setShowAllRooms] = useState(false);
   // console.log(roomName)
   

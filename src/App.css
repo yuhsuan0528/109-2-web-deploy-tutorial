@@ -26,6 +26,10 @@
   background: #6B799E; 
 }
 
+.game-lobby-top-area{
+  margin-top: 10px
+}
+
 .game-lobby-side-block{
    width: 200px;
    background: #949FA4; 
