@@ -4,10 +4,12 @@ const Query = {
     if (!playerName) {
       throw new Error("Missing PlayerName.");
     }
-    const rooms = await db.RoomModel.find({ name: {'$regex': keyword, '$options': 'i'} });
+    let search_key = '';
+    if (keyword) search_key = keyword;
+    const rooms = await db.RoomModel.find({ name: {'$regex': String(search_key), '$options': 'i'} });
     const player = await db.PlayerModel.findOne({ name: playerName });
     if (player) {
-      player.keyword = keyword;
+      player.keyword = search_key;
       await player.save();
     }
     return rooms;
