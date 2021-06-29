@@ -245,7 +245,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 onCancel={() => handleCancel("conirmCloseRoom")}
               >
               {
-                startGame ? 
+                gameStarted ? 
                  <button 
                   className="right-side-leave-room-button" 
                   bordered={false}

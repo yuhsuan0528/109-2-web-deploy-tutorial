@@ -65,6 +65,7 @@ const App = () => {
           // console.log(subscriptionData.data.room.data)
           const newRoom = subscriptionData.data.room.data;
           return { rooms: newRoom};
+          //return newRoom;
         },
       });
     } catch (e) {

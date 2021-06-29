@@ -120,6 +120,8 @@ button[disabled]{
   border: none;
   background-color: #BBBDBE;
   color: #ffffff;
+  width:80px;
+  height:30px;
 }
 
 .right-side-card{

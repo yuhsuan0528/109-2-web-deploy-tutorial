@@ -1,5 +1,5 @@
 import "../App.css";
-import { Button, Space, Divider, Tag, Modal, Input, Select, Radio } from "antd";
+import { Button, Space, Divider, Tag, Modal, Input, Select, Switch } from "antd";
 import { useState, useLayoutEffect } from "react";
 import { useMutation } from '@apollo/react-hooks';
 import { UserAddOutlined, FrownOutlined, UserOutlined, TagOutlined } from '@ant-design/icons';
@@ -19,7 +19,8 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
 
   const [createRoomName, setCreateRoomName] = useState("");
   const [createRoomNum, setCreateRoomNum] = useState(5);
-  const [createRoomPW, setCreateRoomPW] = useState("");
+  const [createRoomPW, setCreateRoomPW] = useState("#$%#$%#$%#$%#$%#$%#$%");
+  const [usePassword, setUsePassword] = useState(false);
 
   const [targetRoomName, setTargetRoomName] = useState("");
 
@@ -94,7 +95,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
     else if(type === "create") setIsModalVisible_create(false);
   };
 
-  let usePassword=false;
+
   const handleCreateRoomName = (e) => {
     setCreateRoomName(e.target.value);
   }
@@ -117,6 +118,14 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
   }
 
  
+  const handleSwitchChange = (checked) => {
+    //console.log('radio checked', e.target.value);
+    if(checked) setUsePassword(true);
+    else {
+      setUsePassword(false);
+      setCreateRoomPW("#$%#$%#$%#$%#$%#$%#$%");
+    }
+  };
   // handle with GraphQL
   
 
@@ -150,12 +159,14 @@ console.log(data);
 
     <>
     <div className="game-lobby-main-block">
-      <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => showModal("create", '_')}>建立房間</Button>
-      <Input style={{ width: 200 }} placeholder="搜尋房間" onChange={handleSearchRoomName}/>
-      <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName(inputName)}>搜尋房間</Button>
-      <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName("")}>搜尋所有房間</Button>
+      <Space>
+        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => showModal("create", '_')}>建立房間</Button>
+        <Input style={{ width: 200 }} placeholder="搜尋房間" onChange={handleSearchRoomName}/>
+        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName(inputName)}>搜尋房間</Button>
+        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName('')}>搜尋所有房間</Button>
+      </Space>
       <Space direction="vertical" split={<Divider />}>
-        { loading ?  (<div> Loading </div>) : 
+        { loading?  (<div> Loading </div>) : 
           data.rooms.map( ({name, players, num_of_players}, index) => 
             (<Space key={`room${index}`}>
               <div className="game-lobby-room">
@@ -169,7 +180,7 @@ console.log(data);
                 <div className="game-lobby-button">
                   { 
                     players.length >= num_of_players && !checkIsMemberInRoom(name) ? <Button bordered={false} block={true} disabled={true} size="large"> <FrownOutlined /> 房間已滿</Button> :
-                    data.rooms.passwd !== "" ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password", name)}> <UserAddOutlined />加入房間</Button> :
+                    data.rooms.passwd !== "#$%#$%#$%#$%#$%#$%#$%" ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password", name)}> <UserAddOutlined />加入房間</Button> :
                     <Button 
                     bordered={false} 
                     block={true} 
@@ -180,7 +191,7 @@ console.log(data);
                             variables:{
                                 roomName: name,
                                 playerName: me,
-                                passwd: "",
+                                passwd: "#$%#$%#$%#$%#$%#$%#$%",
                               }
                             })
                             setRoomName(name);
@@ -228,7 +239,13 @@ console.log(data);
           <Option value="10">10</Option>
         </Select>
       </p>
-      <p> <Radio checked={usePassword}/> 啟用密碼 <Input.Password placeholder="Input password" onChange={handleCreateRoomPW}/> </p>
+      <p> <Switch onChange={handleSwitchChange} /> 使用密碼 </p>
+      <p>
+      {
+        usePassword ? <Input.Password placeholder="Input password" onChange={handleCreateRoomPW}/> : 
+        <Input.Password placeholder="Input password" onChange={handleCreateRoomPW} disabled/>
+      }
+      </p>
     </Modal>
     
 
