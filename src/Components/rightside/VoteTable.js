@@ -9,12 +9,13 @@ function callback(key) {
 
 
 
-const VoteTable = ({ results }) => {
+const VoteTable = ({ results, players }) => {
   const numberMap = {1: "一", 2: "二", 3: "三", 4: "四", 5:"五", 6: "六", 7: "七" ,8: "八", 9: "九", 10:"十"};
   const voteMap = {'T': '白', 'F': '黑'};
 
   var dataSource = [];
   console.log(results);
+  console.log(players);
 
   if(results !== undefined){
     results.map((round, index) => {
@@ -47,7 +48,7 @@ const VoteTable = ({ results }) => {
     if(results.length !== 0){
       for(var i=1; i<=results[0].vote[0].length ; i++){
         columns.push({
-          title: `玩家${i}`,
+          title: players[i-1].name,
           dataIndex: `result_${i}`
         })
       }

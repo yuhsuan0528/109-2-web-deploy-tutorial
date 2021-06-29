@@ -14,7 +14,6 @@ const ChatRoom = ({me, displayStatus, roomName}) => {
 
   var objDiv = document.getElementById("chatRoom");
   if(objDiv !== null){
-    console.log(objDiv.scrollTop)
     objDiv.scrollTop = objDiv.scrollHeight;
   }
   

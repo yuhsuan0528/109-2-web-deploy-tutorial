@@ -1,19 +1,17 @@
 import "../App.css";
 import { Button, Space, Divider, Tag, Modal, Input, Select } from "antd";
 import { useState, useLayoutEffect } from "react";
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { UserAddOutlined, FrownOutlined, UserOutlined, TagOutlined } from '@ant-design/icons';
 import {
-  ROOM_QUERY,
   CREATE_ROOM_MUTATION,
-  ROOM_SUBSCRIPTION,
   JOIN_ROOM_MUTATION
 } from '../graphql';
 
 
 const { Option } = Select;
 
-const GameLobby = ({me, setInRoom, displayStatus, setRoomName}) => {
+const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loading}) => {
 
   const [isModalVisible_password, setIsModalVisible_password] = useState(false);
   const [isModalVisible_create, setIsModalVisible_create] = useState(false);
@@ -43,17 +41,24 @@ const GameLobby = ({me, setInRoom, displayStatus, setRoomName}) => {
       }
     }
     else if (type === "create"){
-      setIsModalVisible_create(false);
-      await createRoom({
-        variables:{
-          roomName: createRoomName,
-          hostName: me,
-          num: createRoomNum,
-        }
-      })
-      setRoomName(createRoomName);
-      setInRoom(true);
-      
+      if(checkNameUsed(createRoomName)){
+        displayStatus({
+          type:"error",
+          msg: "Room Name is Used! Please Enter another name!",
+        });
+      }
+      else{
+        setIsModalVisible_create(false);
+        await createRoom({
+          variables:{
+            roomName: createRoomName,
+            hostName: me,
+            num: createRoomNum,
+          }
+        })
+        setRoomName(createRoomName);
+        setInRoom(true);
+      }   
     }
   };
 
@@ -78,37 +83,17 @@ const GameLobby = ({me, setInRoom, displayStatus, setRoomName}) => {
 
  
   // handle with GraphQL
-   const { loading, error, data, subscribeToMore } = useQuery(ROOM_QUERY);
-
-   useLayoutEffect(() => {
-    try {
-      subscribeToMore({
-        document: ROOM_SUBSCRIPTION,
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data) return prev;
-          // console.log(subscriptionData.data)
-          // console.log(subscriptionData.data.room.data)
-          const newRoom = subscriptionData.data.room.data;
-          return { rooms: newRoom};
-        },
-      });
-    } catch (e) {
-      // console.log(e);
-    }
-  }, [subscribeToMore]);
+  
 
   const [createRoom] = useMutation(CREATE_ROOM_MUTATION);
   const [joinRoom] = useMutation(JOIN_ROOM_MUTATION);
 
   console.log(data);
-   const checkIsMemberInRoom = (name) => {
+
+  const checkIsMemberInRoom = (name) => {
     for(var i=0; i<data.rooms.length; i++){    
       if(data.rooms[i].name === name){
-        console.log(data.rooms[i].players)
-        // console.log(data.rooms[i].players.length)
         for(var j=0; j<data.rooms[i].players.length; j++){
-          console.log(me)
-          console.log(data.rooms[i].players[j].name === me)
           if(data.rooms[i].players[j].name === me){
             return true
           }
@@ -118,6 +103,13 @@ const GameLobby = ({me, setInRoom, displayStatus, setRoomName}) => {
     }
     return false;
   }
+
+  const checkNameUsed = (name) => {
+    const sameName = data.rooms.find(room => room.name === name);
+    if(sameName === undefined) return false;
+    else return true;
+  }
+
   return (
 
     <>

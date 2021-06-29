@@ -13,7 +13,7 @@ import {
   ASSASSIN_MUTATION
 } from "../graphql"
 
-const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
+const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
   const [membersToChoose, setMembersToChoose] = useState(4)
   const [membersChosen, setMembersChosen] = useState([])
   const [playerStatus,setPlayerStatus] = useState([
@@ -73,7 +73,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
     //   console.log(newPlayerStatus)
       // setPlayerStatus(newPlayerStatus)
     // } else
-    if (roomInfo.status !== "pre-game" && roomInfo.players){
+    if (roomInfo.status !== "pre-game" && roomInfo.players && roomInfo.players.length === roomInfo.num_of_players){
       const self = roomInfo.players.find(player => player.name === me)
       let newPlayerStatus = [... self.players_list]
       for(let i=0; i<newPlayerStatus.length; i++){
@@ -87,13 +87,9 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
     
   },[roomInfo.players])
 
-  useEffect(() => {
-    console.log(playerStatus)
-  },[playerStatus])
-
   useEffect(()=>{
     if (roomInfo.status){
-      console.log(roomInfo)
+      //console.log(roomInfo)
       if (roomInfo.status.includes("assign") || roomInfo.status.includes("vote")){
         let newRound = parseInt(roomInfo.status.slice(-1))-1
         setGameStatus(prev => ({... prev, round: newRound}))
@@ -125,6 +121,19 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
     assassinate: assassinate
   }
 
+  const rightsideParams = {
+    me: me,
+    displayStatus: displayStatus, 
+    membersToChoose: membersToChoose, 
+    roomName: roomName,
+    roomInfo: roomInfo, 
+    membersChosen: membersChosen, 
+    setMembersToChoose: setMembersToChoose, 
+    setInRoom: setInRoom, 
+    roomsData: roomsData
+  }
+
+
   return (
     <>
       <Row >
@@ -133,7 +142,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
           <Board status={gameStatus}/>
         </Col>
         <Col className="Column-2"  xl={{ span: 8}}>
-          <Rightside me={me} membersToChoose={membersToChoose} roomName={roomName} roomInfo={roomInfo} displayStatus={displayStatus} membersChosen={membersChosen} setMembersToChoose={setMembersToChoose}  setInRoom={setInRoom}/>
+          <Rightside rightsideParams={rightsideParams}/>
         </Col>
       </Row>
     </>);

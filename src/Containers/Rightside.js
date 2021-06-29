@@ -1,6 +1,6 @@
 import "../App.css";
 import { useState, useEffect } from "react";
-import { Button, Modal, Space, Card, message, Spin } from "antd";
+import { Button, Modal, Space, Card, message, Spin, Popconfirm, notification  } from "antd";
 import { useMutation } from '@apollo/react-hooks';
 import ChatRoom from "../Components/rightside/ChatRoom.js";
 import VoteTable from "../Components/rightside/VoteTable.js";
@@ -19,9 +19,9 @@ import StartAnime from '../Components/Anime/StartAnime.js';
 import GoodVictoryAnime from '../Components/Anime/GoodVictoryAnime.js';
 import BadVictoryAnime from '../Components/Anime/BadVictoryAnime.js';
 
-const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersToChoose, setInRoom}) => {
-
-  const assignedNumberList = {5: [2,3,2,3,3],
+const Rightside = ({rightsideParams}) => {
+const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersToChoose, setInRoom, roomsData} = rightsideParams;
+ const assignedNumberList = {5: [2,3,2,3,3],
                               6: [2,3,4,3,4],
                               7: [2,3,3,4,4],
                               8: [3,4,4,5,5],
@@ -32,6 +32,8 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
   const [isModalVisible_vote, setIsModalVisible_vote] = useState(false);
   const [isModalVisible_cup, setIsModalVisible_cup] = useState(false);
   const [isModalVisible_rule, setIsModalVisible_rule] = useState(false);
+  const [visible_confirmCloseRoom, setVisible_confirmCloseRoom] = useState(false);
+  const [visible_confirmLeaveRoom, setVisible_confirmLeaveRoom] = useState(false);
 
   const [cardContent, setCardContent] = useState("character");
 
@@ -61,6 +63,8 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
     if(type === "vote") setIsModalVisible_vote(false);
     else if(type === "cup") setIsModalVisible_cup(false);
     else if(type === "rule") setIsModalVisible_rule(false);
+    else if(type === "conirmCloseRoom") setVisible_confirmCloseRoom(false);
+    else if(type === "conirmLeaveRoom") setVisible_confirmLeaveRoom(false);
   };
 
   const openNotification = (type) => {
@@ -80,11 +84,9 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
       setCardContent("waitAssign");
     }
   };
-  // console.log(roomInfo);
 
-  
 
-  const playerNum = 5;
+  //console.log(roomInfo);
 
   // handle GraphQL
   const [startGame] = useMutation(START_GAME_MUTATION);
@@ -109,6 +111,28 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
     return null;
   }
 
+  const checkIsAssassin = () => {
+    const self = roomInfo.players.find(player => player.name === me);
+    const isMe = self.players_list.find(list => list.name === me);
+    const isAssassin = isMe.character === 'A';
+    return  isAssassin;
+  }
+
+  const checkMissingMembers = () => {
+    return roomInfo.players.length < roomInfo.num_of_players
+  }
+
+  const checkRoomClosed = () => {
+    const roomExist = roomsData.rooms.find(room => room.name === roomName)
+    if(roomExist === undefined ) return true;
+    else return false; 
+  }
+
+  useEffect(()=>{
+    if (checkRoomClosed()){
+        setCardContent("roomClosed");
+      }
+  },[roomsData])
 
   useEffect(()=>{
     if(Object.keys(roomInfo).length !== 0){
@@ -123,8 +147,11 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
           setShowStartAnime(false); 
         }), 5000);
       }
-
-      if(status === 'assign' && checkLeader() ){
+      
+      if (checkMissingMembers() && gameStarted) {
+        setCardContent("SomeoneMissing");
+      }
+      else if(status === 'assign' && checkLeader() ){
         openNotification("team");
         setMembersToChoose(assignedNumberList[roomInfo.num_of_players][round-1]);
         setGameStarted(true)
@@ -156,9 +183,17 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
         }), 5000);
         setCardContent("character");
       }
+      else if(status === 'assassin' && checkIsAssassin()) {
+        setCardContent("isAssassin");
+      }
+      else if(status === 'assassin' && !checkIsAssassin()) {
+        setCardContent("WaitAssassin");
+      }
+      
+     
       else  setCardContent("character");
     }
-    console.log(roomInfo) 
+    //console.log(roomInfo) 
   }, [roomInfo])
 
 
@@ -170,43 +205,60 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
     <>
           
           <div className="right-side-top-area">
-            <button 
-            className="right-side-leave-room-button" 
-            bordered={false}
-            onClick={async () => {
-              try{
-                  await leaveRoom({
-                  variables:{
-                      roomName: roomName,
-                      playerName: me,
-                    }
-                  })
-                  setInRoom(false)
-                }
-                catch(e){
-                  console.log(e);
-                }  
-            }}>離開房間</button>
-            
-            { roomInfo.host === me ?  <button 
-            className="right-side-leave-room-button" 
-            bordered={false}
-            onClick={async () => {
-              try{
-                  await closeRoom({
-                  variables:{
-                      roomName: roomName,
-                      playerName: me,
-                    }
-                  })
-                  setInRoom(false)
-                }
-                catch(e){
-                  console.log(e);
-                }  
-            }}>關閉房間</button> : <div></div>
-            }
-          </div>
+
+            { roomInfo.host === me ?  
+              <Popconfirm
+                title="確定要關閉房間嗎？"
+                visible={visible_confirmCloseRoom}
+                onConfirm={async () => {
+                    try{
+                        await closeRoom({
+                        variables:{
+                            roomName: roomName,
+                            playerName: me,
+                          }
+                        })
+                        setInRoom(false)
+                        setVisible_confirmCloseRoom(false);
+                      }
+                      catch(e){
+                        console.log(e);
+                      }  
+                  }}
+                onCancel={() => handleCancel("conirmCloseRoom")}
+              >
+              <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={() => setVisible_confirmCloseRoom(true)}>關閉房間</button> 
+                  </Popconfirm> : 
+                <Popconfirm
+                title="確定要離開房間嗎？"
+                visible={visible_confirmLeaveRoom}
+                onConfirm={async () => {
+                    try{
+                        await leaveRoom({
+                        variables:{
+                            roomName: roomName,
+                            playerName: me,
+                          }
+                        })
+                        setInRoom(false)
+                        setVisible_confirmLeaveRoom(false);
+                      }
+                      catch(e){
+                        console.log(e);
+                      }  
+                  }}
+                onCancel={() => handleCancel("conirmLeaveRoom")}
+                > 
+                <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</button>
+                  </Popconfirm>
+                  }
+           </div>
            <div className="right-side-character-board">
 
            <Card  bordered={false} style={{ width: 450 }}>
@@ -222,6 +274,10 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
                 cardContent === "cup" ? <ChooseCup name={me} roomName={roomName} cupped={cupped} setCupped={setCupped}/> : 
                 cardContent === "team" ? <ChoosePeople number={membersToChoose} membersChosen={membersChosen} roomName={roomName} leaderName={me}/> :
                 cardContent === "wait_cup" ?  <h1> <Spin />等待其他玩家出任務 </h1> :
+                cardContent === "isAssassin" ? <h1> 請刺客刺殺梅林 </h1> :
+                cardContent === "WaitAssassin" ? <h1> <Spin />等待刺客刺殺梅林 </h1> :
+                cardContent === "SomeoneMissing" ? <h1> 有玩家離開房間... 請等待 </h1> :
+                cardContent === "roomClosed" ? <h1> 房間已關閉.... 請重新開啟遊戲</h1>:
                 <h1> <Spin />等待其他玩家派票 </h1>
               }
               
@@ -271,7 +327,7 @@ const Rightside = ({me, displayStatus, server, membersToChoose, roomName, roomIn
             onOk={() => handleOk("vote")} 
             onCancel={() => handleCancel("vote")} 
             width={600}>
-              <VoteTable results={voteResults}/>
+              <VoteTable results={voteResults} players={roomInfo.players}/>
             </Modal>
 
             <Modal title="任務結果" 
