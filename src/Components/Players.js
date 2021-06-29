@@ -1,18 +1,17 @@
 import React from 'react'
 import CharCard from './CharCard.js'
 import {message} from 'antd'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 function Players({playersParams}) {
     const {me, status, setMembersToChoose, setMembersChosen , membersChosen, membersToChoose, roomInfo, assassinate} = playersParams
     const [twoRow, setTwoRow] = useState(false)
-    const notInitialRender = useRef(false)
     useEffect(() => {
         const statusMe = status.find(player => player.name === me)
+        console.log(statusMe)
         if (statusMe){
-            if (notInitialRender.current && statusMe.isLeader) message.info(`目前隊員: ${membersChosen}`)
+            if (statusMe.isLeader) message.info(`目前隊員: ${membersChosen}`)
         }
-        else notInitialRender.current = true
         
     },[membersChosen])
 

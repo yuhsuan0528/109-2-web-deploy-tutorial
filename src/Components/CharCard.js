@@ -1,13 +1,12 @@
 import React from 'react'
 import {message} from 'antd'
 import {useState, useEffect, useRef} from 'react'
+import { set } from 'mongoose'
 
 function CharCard({cardStatus, cardParams}) {
     const {me, twoRow, membersToChoose, setMembersToChoose, membersChosen, setMembersChosen, roomInfo, assassinate} = cardParams
     const {name, me:isMe, character, isLeader, isAssigned, vote} = cardStatus
     const [selected, setSelected] = useState(false)
-
-    console.log(twoRow)
     let teamDir = ''
     const charDict = {
         'GM': 'images/good_people_merlin.jpg',
@@ -75,6 +74,10 @@ function CharCard({cardStatus, cardParams}) {
             setMembersChosen(membersChosen.filter(person => person !== name))
         }        
     },[selected])
+
+    useEffect(() =>{
+        setSelected(false)
+    },[roomInfo.status])
     const me_name = isMe? `${name}⭐`:name 
     return (
         <>

@@ -23,7 +23,7 @@ const ChooseVote = ({name, roomName, voted, setVoted}) => {
         <button 
         className="right-side-vote-button" 
         onClick={ async () => {
-          console.log('click');
+          // console.log('click');
           try{
             await vote({
             variables:{

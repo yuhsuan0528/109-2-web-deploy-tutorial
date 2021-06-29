@@ -3,7 +3,7 @@ import { Space, Button } from "antd";
 import { ASSIGN_MUTATION } from "../../graphql"
 import { useMutation } from '@apollo/react-hooks';
 
-const ChoosePeople = ({number, membersChosen, roomName, leaderName}) => {
+const ChoosePeople = ({number, membersChosen, roomName, leaderName, setMembersChosen}) => {
 
   const [assign] = useMutation(ASSIGN_MUTATION);
 
@@ -27,7 +27,8 @@ const ChoosePeople = ({number, membersChosen, roomName, leaderName}) => {
                 leaderName: leaderName,
                 assignedNames: membersChosen
               }
-            })  
+            })
+            setMembersChosen([])
           }
           catch(e){
             console.log(e)

@@ -14,7 +14,7 @@ import {
 } from "../graphql"
 
 const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
-  const [membersToChoose, setMembersToChoose] = useState(4)
+  const [membersToChoose, setMembersToChoose] = useState(0)
   const [membersChosen, setMembersChosen] = useState([])
   const [playerStatus,setPlayerStatus] = useState([{name:me, me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'}])
   // name, character, me from roomInfo.players.playerList
@@ -50,16 +50,14 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
   },[data])
 
   useEffect(() => {
-    console.log(roomInfo.players)
     if (roomInfo.status === "pre-game" && roomInfo.players){
       let newPlayerStatus = []
       for(let i=0; i<roomInfo.players.length; i++){
         let name = roomInfo.players[i].name
-        console.log(name)
         if (name === me) newPlayerStatus.push({name:name, me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
         else newPlayerStatus.push({name:name, me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
       }
-      console.log(newPlayerStatus)
+      // console.log(newPlayerStatus)
       setPlayerStatus(newPlayerStatus)
     } else if (roomInfo.status !== "pre-game" && roomInfo.players && roomInfo.players.length === roomInfo.num_of_players){
       const self = roomInfo.players.find(player => player.name === me)
@@ -77,7 +75,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
 
   useEffect(()=>{
     if (roomInfo.status){
-      //console.log(roomInfo)
+      // console.log(roomInfo)
       if (roomInfo.status.includes("assign") || roomInfo.status.includes("vote")){
         let newRound = parseInt(roomInfo.status.slice(-1))-1
         setGameStatus(prev => ({... prev, round: newRound}))
@@ -115,7 +113,8 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
     membersToChoose: membersToChoose, 
     roomName: roomName,
     roomInfo: roomInfo, 
-    membersChosen: membersChosen, 
+    membersChosen: membersChosen,
+    setMembersChosen: setMembersChosen,
     setMembersToChoose: setMembersToChoose, 
     setInRoom: setInRoom, 
     roomsData: roomsData
