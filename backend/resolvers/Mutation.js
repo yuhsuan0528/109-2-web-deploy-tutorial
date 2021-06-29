@@ -4,11 +4,6 @@ const validatePlayer = async (db, name) => {
   if (existing) return existing;
   else return new db.PlayerModel({ name: name }).save();
 };
-const validateRoom = async (db, roomName, hostName, num) => {
-  const existing = await db.RoomModel.findOne({ name: roomName });
-  if (existing) return existing;
-  else return new db.RoomModel({ name: roomName, host: hostName, num_of_players: num, status: "pre-game" }).save();
-};
 
 const shuffle = (array)  => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -24,57 +19,48 @@ const character = ['GM', 'BM', 'P', 'A', 'GN', 'GN', 'O', 'GN', 'GN', 'MO'];
 const Mutation = {
   
   async logIn( parent, { name }, { db }, info ) {
-    if (!name) {
-      throw new Error("Missing player name for logIn.");
-    }
+    if (!name) throw new Error("Missing player name for logIn.");
+    
     const player = await validatePlayer(db, name);
     return player.name;
   },
 
   async createRoom( parent, { roomName, hostName, num }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!hostName) {
-      throw new Error("Missing host name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!hostName) throw new Error("Missing host name.");
+    
     const host = await validatePlayer(db, hostName);
     const room_existing = await db.RoomModel.findOne({ name: roomName });
-    const room = await validateRoom(db, roomName, hostName, num);
+    if (room_existing) {
+      throw new Error("This room name has been created and still exists.");
+    }
+    const room = await new db.RoomModel({ name: roomName, host: hostName, num_of_players: num, status: "pre-game" });
     
+    room.players.push(host._id);
     host.room = room._id;
     host.is_leader = true;
-    const existing = room.players.find(p => String(p) === String(host._id))
-    if (!existing) {
-      await room.players.push(host._id);
-    }
+
     await host.save();
     await room.save();
 
-    if (!room_existing) {
-      const all_rooms = await db.RoomModel.find({});
-      pubsub.publish(`all_rooms`, {
-        room: {
-          data: all_rooms,
-        }
-      });
-      pubsub.publish(`roomInfo ${roomName}`, {
-        roomInfo: {
-          data: room,
-        }
-      });
-    }
-
+    const all_rooms = await db.RoomModel.find({});
+    pubsub.publish(`all_rooms`, {
+      room: {
+        data: all_rooms,
+      }
+    });
+    pubsub.publish(`roomInfo ${roomName}`, {
+      roomInfo: {
+        data: room,
+      }
+    });
     return roomName;
   },
 
   async joinRoom( parent, { roomName, playerName }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
+
     const player = await validatePlayer(db, playerName);
     const room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
@@ -89,7 +75,7 @@ const Mutation = {
       }
       player.room = room._id;
       player.is_leader = false;
-      await room.players.push(player._id);
+      room.players.push(player._id);
     }
     await player.save();
     await room.save();
@@ -105,24 +91,19 @@ const Mutation = {
         data: room,
       }
     });
-
     return roomName;
   },
 
   async createMessage( parent, { roomName, playerName, body }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
+    
     const player = await validatePlayer(db, playerName);
     const room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
 
-    const newMessage = new db.MessageModel({ sender: player, body: body });
-    await newMessage.save();
-    await room.messages.push(newMessage);
+    const newMessage = await new db.MessageModel({ sender: player, body: body }).save();
+    room.messages.push(newMessage);
     await room.save();
 
     pubsub.publish(`message ${roomName}`, {
@@ -134,12 +115,9 @@ const Mutation = {
   },
 
   async startGame( parent, { roomName, playerName }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
+
     const player = await validatePlayer(db, playerName);
     let room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
@@ -214,9 +192,8 @@ const Mutation = {
                         character: show_character});
         await pInfo.save();
 
-        await myself.players_list.push(pInfo);
+        myself.players_list.push(pInfo);
         await myself.save();
-
       }
     }
 
@@ -236,9 +213,8 @@ const Mutation = {
   },
 
   async assign( parent, { roomName, leaderName, assignedNames }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    
     let room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
     room = await room
@@ -265,9 +241,13 @@ const Mutation = {
       const name_existed = assignedNames.find(item => String(item) === String(target_name));
       if (name_existed) target.is_assigned = true;
       else target.is_assigned = false;
+
+      // refresh each player's vote
+      target.vote = 'null';
+
       await target.save();
     }
-
+    
     // publish the new room info
     const room_finished = await db.RoomModel.findOne({ name: roomName });
     const round =  Number(room_finished.status.split('-')[1]);
@@ -284,12 +264,8 @@ const Mutation = {
   },
 
   async vote( parent, { roomName, playerName, agree }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
     
     // set the vote of this player
     const player = await validatePlayer(db, playerName);
@@ -323,20 +299,19 @@ const Mutation = {
       
       // save the vote results to the room info
       if (round > room.vote_results.length) {
-        const VR = await new db.VoteResultModel({ vote: [results] });
-        await VR.save();
+        const VR = await new db.VoteResultModel({ vote: [results] }).save();
         room.vote_results.push(VR);
       }
       else {
         const prev_VR = await db.VoteResultModel.findOne({ _id: room.vote_results[round - 1]._id });
-        await prev_VR.vote.push(results);
+        prev_VR.vote.push(results);
         await prev_VR.save();
       }
 
       const true_vote = room.players.filter(py => String(py.vote) === 'true');
       const false_vote = room.players.filter(py => String(py.vote) === 'false');
 
-      // refresh each player's is_leader / is_assigned /  vote
+      // refresh each player's is_leader / is_assigned
       const leader_idx = Number(room.players.findIndex(py => py.is_leader === true));
       const player_list = room.players.map(p => p.name);
       for (var i = 0; i < player_list.length; i++) {
@@ -349,8 +324,6 @@ const Mutation = {
             target.is_leader = true;
           }
         }
-        target.vote = 'null';
-        
         await target.save();
       }
 
@@ -361,7 +334,7 @@ const Mutation = {
         else room.status = `assign-${round}-${vote_round+1}`;
       }
       await room.save();
-
+      
       // publish the new room info
       const room_finished = await db.RoomModel.findOne({ name: roomName });
       pubsub.publish(`roomInfo ${roomName}`, {
@@ -370,17 +343,14 @@ const Mutation = {
         }
       });
     }
-    
-    return room.name;
+
+    return room.name;    
   },
 
   async cup( parent, { roomName, playerName, agree }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
+    
     let room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
     room = await room
@@ -408,8 +378,7 @@ const Mutation = {
       let bad_count = 0;
       if (agree) good_count = 1;
       else bad_count = 1;
-      const CR = await new db.CupResultModel({ good: good_count, bad: bad_count, player: [player_idx] });
-      await CR.save();
+      const CR = await new db.CupResultModel({ good: good_count, bad: bad_count, player: [player_idx] }).save();
       room.cup_results.push(CR);
     }
     else {
@@ -421,7 +390,7 @@ const Mutation = {
       }
       if (agree) prev_CR.good += 1;
       else prev_CR.bad += 1;
-      await prev_CR.player.push(player_idx);
+      prev_CR.player.push(player_idx);
       await prev_CR.save();
     }
     await room.save();
@@ -469,9 +438,8 @@ const Mutation = {
   },
 
   async assassin( parent, { roomName, playerName, targetName }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    
     let room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
     room = await room
@@ -521,12 +489,9 @@ const Mutation = {
   },
 
   async leaveRoom( parent, { roomName, playerName }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
+    
     const player = await validatePlayer(db, playerName);
     let room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
@@ -546,12 +511,9 @@ const Mutation = {
     // delete players_list PlayerInfo documents
     for (var k = 0; k < player.players_list.length; k++) {
       await db.PlayerInfoModel.deleteMany({ _id: player.players_list[k] }, function (err, _) {
-        if (err) {
-            throw err;
-        }
+        if (err) throw err;
       });
     }
-    
     player.room = null;
     player.is_leader = null;
     player.is_assigned = null;
@@ -582,12 +544,9 @@ const Mutation = {
   },
 
   async closeRoom( parent, { roomName, playerName }, { db, pubsub }, info ) {
-    if (!roomName) {
-      throw new Error("Missing room name.");
-    }
-    if (!playerName) {
-      throw new Error("Missing player name.");
-    }
+    if (!roomName) throw new Error("Missing room name.");
+    if (!playerName) throw new Error("Missing player name.");
+    
     const player = await validatePlayer(db, playerName);
     let room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
@@ -618,7 +577,7 @@ const Mutation = {
           });
         }
       }
-      // reset this player's Player document
+      // reset this player's document
       myself.room = null;
       myself.is_leader = null;
       myself.is_assigned = null;

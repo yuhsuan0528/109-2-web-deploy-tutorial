@@ -18,7 +18,7 @@ const ChoosePeople = ({number, membersChosen, roomName, leaderName}) => {
       </Space>
       {
         number === 0 ? <Button 
-        className="right-side-vote-button" 
+        className="right-side-assign-button" 
         onClick={ async () => {
           try{
             await assign({
@@ -35,7 +35,7 @@ const ChoosePeople = ({number, membersChosen, roomName, leaderName}) => {
         }}>
         開始投票
         </Button> :
-        <Button className="right-side-vote-button" disabled>開始投票</Button>
+        <Button className="right-side-assign-button" disabled>開始投票</Button>
       }
       </div>
     </>

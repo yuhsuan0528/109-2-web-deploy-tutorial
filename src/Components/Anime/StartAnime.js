@@ -1,6 +1,6 @@
 import "./anime.css";
 import ReactAnime from 'react-animejs';
-const {Anime, stagger} = ReactAnime;
+const {Anime} = ReactAnime;
 
 const StartAnime = () => {
 	var ml4 = {};

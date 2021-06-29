@@ -23,8 +23,6 @@ const ChatBox = ({name1, roomName}) => {
           variables: { roomName: roomName },
           updateQuery: (prev, { subscriptionData }) => { 
             if (!subscriptionData.data) return prev;
-            console.log(subscriptionData.data)
-            console.log(subscriptionData.data.message)
             const newMessage = subscriptionData.data.message;
             return({ 
               roomChat: [ ...prev.roomChat, newMessage],

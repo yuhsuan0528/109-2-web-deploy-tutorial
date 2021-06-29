@@ -13,7 +13,7 @@ import {
   ASSASSIN_MUTATION
 } from "../graphql"
 
-const PlayRoom = ({me, displayStatus, roomName}) => {
+const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
   const [membersToChoose, setMembersToChoose] = useState(4)
   const [membersChosen, setMembersChosen] = useState([])
   const [playerStatus,setPlayerStatus] = useState([
@@ -133,7 +133,7 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
           <Board status={gameStatus}/>
         </Col>
         <Col className="Column-2"  xl={{ span: 8}}>
-          <Rightside me={me} membersToChoose={membersToChoose} roomName={roomName} roomInfo={roomInfo} displayStatus={displayStatus} membersChosen={membersChosen} setMembersToChoose={setMembersToChoose}/>
+          <Rightside me={me} membersToChoose={membersToChoose} roomName={roomName} roomInfo={roomInfo} displayStatus={displayStatus} membersChosen={membersChosen} setMembersToChoose={setMembersToChoose}  setInRoom={setInRoom}/>
         </Col>
       </Row>
     </>);

@@ -16,7 +16,7 @@ function CharCard({cardStatus, cardParams}) {
         'G': 'images/good_people_normal_1.jpg',
         'B': 'images/bad_people_normal_1.jpg',
         'M': 'images/merlin_morgana.jpg',
-        'null': 'images/character_unknown.png',
+        'null': 'images/character_unknown.jpg',
     }
 
     const voteDict = {

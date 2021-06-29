@@ -53,7 +53,31 @@ mutation cup(
     agree: $agree
   )
 }
+`;
+
+export const LEAVE_ROOM_MUTATION = gql`
+  mutation leaveRoom(
+    $roomName: String!
+    $playerName: String!
+  ) {
+    leaveRoom (
+      roomName: $roomName
+      playerName: $playerName
+    )
+  }
 `; 
+
+export const CLOSE_ROOM_MUTATION = gql`
+mutation closeRoom(
+    $roomName: String!
+    $playerName: String!
+  ) {
+  closeRoom (
+    roomName: $roomName
+    playerName: $playerName
+  )
+}
+`;
 
 
 /* for reference
