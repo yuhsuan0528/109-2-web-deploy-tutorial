@@ -2,7 +2,8 @@ import React from 'react'
 import {message} from 'antd'
 import {useState, useEffect, useRef} from 'react'
 
-function CharCard({me, cardStatus, twoRow, setMembersToChoose, setMembersChosen, membersChosen, membersToChoose, roomInfo}) {
+function CharCard({cardStatus, cardParams}) {
+    const {me, twoRow, membersToChoose, setMembersToChoose, membersChosen, setMembersChosen, roomInfo, assassinate} = cardParams
     const {name, me:isMe, character, isLeader, isAssigned, vote} = cardStatus
     const [selected, setSelected] = useState(false)
     let teamDir = ''
@@ -41,13 +42,24 @@ function CharCard({me, cardStatus, twoRow, setMembersToChoose, setMembersChosen,
         markerClass = "marker-small"
     }
     const clickHandler = () => {
-        const leader = roomInfo.players.find(player => player.is_leader)
-        if(roomInfo.status.includes('assign') && leader.name === me){
+        const self = roomInfo.players.find(player => player.name === me)
+        if(roomInfo.status.includes('assign') && self.is_leader){
             if (membersToChoose === 0 && !selected) {
                 message.info('Team is full!')
             } else {
                 setSelected(!selected)
             }
+        }
+        const playerListSelf = self.players_list.find(player => player.name === me)
+        if (roomInfo.status.includes('assassin') && playerListSelf.character === 'A'){
+            message.info(`assassinate ${name}`)
+            assassinate({
+                variables:{
+                  roomName: roomInfo.name,
+                  playerName: me,
+                  targetName: name,
+                }
+              })
         }
     }
     useEffect(() => {
@@ -64,7 +76,7 @@ function CharCard({me, cardStatus, twoRow, setMembersToChoose, setMembersChosen,
     const me_name = isMe? `${name}⭐`:name 
     return (
         <>
-            <p align='center'>{me_name}</p>
+            <p align='center' style={{lineHeight: '12px'}}>{me_name}</p>
             <img className={cardClass} src={charDir} onClick={clickHandler}/>
             <img className={markerClass} src={voteDir}/>
             <img className={markerClass} src={teamDir}/>

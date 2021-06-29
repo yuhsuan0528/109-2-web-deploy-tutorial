@@ -4,7 +4,7 @@ import {message} from 'antd'
 import {useEffect, useRef} from 'react'
 
 function Players({playersParams}) {
-    const {me, status, setMembersToChoose, setMembersChosen , membersChosen, membersToChoose, roomInfo, assassin, setAssassin} = playersParams
+    const {me, status, setMembersToChoose, setMembersChosen , membersChosen, membersToChoose, roomInfo, assassinate} = playersParams
     let twoRow = false
     const notInitialRender = useRef(false)
     useEffect(() => {
@@ -12,12 +12,23 @@ function Players({playersParams}) {
         else notInitialRender.current = true
     },[membersChosen])
 
+    const cardParams = {
+        me:me,
+        twoRow: twoRow,
+        membersToChoose: membersToChoose,
+        setMembersToChoose: setMembersToChoose,
+        membersChosen: membersChosen,
+        setMembersChosen: setMembersChosen,
+        roomInfo: roomInfo,
+        assassinate:assassinate
+    }
+
     if (status.length<=6){
         return (
             <table className="player-section" border="0">
                 <tbody>
                     <tr>
-                        {status.map((data, index) => (<td><CharCard key={index} me={me} twoRow={twoRow} cardStatus={data} setMembersToChoose={setMembersToChoose} setMembersChosen={setMembersChosen} membersChosen={membersChosen} membersToChoose={membersToChoose} roomInfo={roomInfo}/></td>))}
+                        {status.map((data, index) => (<td><CharCard key={index} cardStatus={data} cardParams={cardParams}/></td>))}
                     </tr>
                 </tbody>
             </table>
@@ -31,10 +42,10 @@ function Players({playersParams}) {
         <table className="player-section" border="0">
             <tbody>
                 <tr>
-                    {top.map((data, index) => (<td><CharCard key={index} me={me} twoRow={twoRow} cardStatus={data} setMembersToChoose={setMembersToChoose} setMembersChosen={setMembersChosen} membersChosen={membersChosen} membersToChoose={membersToChoose} roomInfo={roomInfo}/></td>))}
+                    {top.map((data, index) => (<td><CharCard key={index} cardStatus={data} cardParams={cardParams}/></td>))}
                 </tr>
                 <tr>
-                    {bottom.map((data, index) => (<td><CharCard key={index} me={me} twoRow={twoRow} cardStatus={data} setMembersToChoose={setMembersToChoose} setMembersChosen={setMembersChosen} membersChosen={membersChosen} membersToChoose={membersToChoose} roomInfo={roomInfo}/></td>))}
+                    {bottom.map((data, index) => (<td><CharCard key={index} cardStatus={data} cardParams={cardParams}/></td>))}
                 </tr>
             </tbody>
         </table>

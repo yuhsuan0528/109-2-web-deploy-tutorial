@@ -3,9 +3,9 @@ import { gql } from '@apollo/client';
 
 export const CREATE_ROOM_MUTATION = gql`
   mutation createRoom(
-  $roomName: String!
-  $hostName: String!
-  $num: Int!
+    $roomName: String!
+    $hostName: String!
+    $num: Int!
   ) {
     createRoom (
       roomName: $roomName

@@ -4,7 +4,7 @@ import { Row, Col } from "antd";
 import Board from "../Components/Board.js";
 import Player from "../Components/Players.js";
 import Rightside from "./Rightside.js"
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
   GAMEINFO_QUERY,
   ROOMINFO_SUBSCRIPTION,
@@ -16,7 +16,6 @@ import {
 const PlayRoom = ({me, displayStatus, roomName}) => {
   const [membersToChoose, setMembersToChoose] = useState(4)
   const [membersChosen, setMembersChosen] = useState([])
-  const [assassin, setAssassin] = useState('')
   const [playerStatus,setPlayerStatus] = useState([
     {name:'1', me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
     {name:'2', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
@@ -25,10 +24,10 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
     {name:'5', me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'},
   ])
   // name, character, me from roomInfo.players.playerList
-  // isLeader, isAssigned, vote from roomInfo.players
+  // isLeader, isAssigned, vote (name) from roomInfo.players
   const [gameStatus, setGameStatus] = useState({score: [], round: 0})
-
   const [roomInfo, setRoomInfo] = useState({});
+  const [assassinate] = useMutation(ASSASSIN_MUTATION)
 
   // ----------- gameInfo -------------------
   const { loading, error, data, subscribeToMore } = useQuery(GAMEINFO_QUERY,{variables: { roomName: roomName},});
@@ -57,6 +56,23 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
   },[data])
 
   useEffect(() => {
+    // console.log(roomInfo.players)
+    // if (roomInfo.status === "pre-game" && roomInfo.players){
+    //   const n = roomInfo.players.length
+    //   let newPlayerStatus = new Array(n).fill({})
+    //   console.log(newPlayerStatus)
+    //   for(let i=0; i<newPlayerStatus.length; i++){
+    //     let name = roomInfo.players[i].name
+    //     console.log(name)
+    //     newPlayerStatus[i].name = name
+    //     console.log(me)
+    //     if (name === me) newPlayerStatus[i].me = true
+    //     else newPlayerStatus[i].me = false
+    //     Object.assign(newPlayerStatus[i], {character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
+    //   }
+    //   console.log(newPlayerStatus)
+      // setPlayerStatus(newPlayerStatus)
+    // } else
     if (roomInfo.status !== "pre-game" && roomInfo.players){
       const self = roomInfo.players.find(player => player.name === me)
       let newPlayerStatus = [... self.players_list]
@@ -71,14 +87,16 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
     
   },[roomInfo.players])
 
+  useEffect(() => {
+    console.log(playerStatus)
+  },[playerStatus])
+
   useEffect(()=>{
     if (roomInfo.status){
+      console.log(roomInfo)
       if (roomInfo.status.includes("assign") || roomInfo.status.includes("vote")){
         let newRound = parseInt(roomInfo.status.slice(-1))-1
         setGameStatus(prev => ({... prev, round: newRound}))
-      }
-      if (roomInfo.status === 'assissin'){
-
       }
     }
   }, [roomInfo.status])
@@ -104,8 +122,7 @@ const PlayRoom = ({me, displayStatus, roomName}) => {
     membersChosen: membersChosen,
     setMembersChosen: setMembersChosen,
     roomInfo:roomInfo,
-    assassin: assassin,
-    setAssassin: setAssassin
+    assassinate: assassinate
   }
 
   return (
