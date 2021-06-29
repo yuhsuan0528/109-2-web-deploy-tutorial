@@ -221,7 +221,6 @@ button[disabled]{
 .player-section {
   margin-left: auto;
   margin-right: auto;
-  padding-top: 5px;
 }
 
 .marker-big {
@@ -237,87 +236,87 @@ button[disabled]{
 .board {
   width: 650px;
   position:absolute;
-  top: 235px;
-  left: 130px;
+  top: 260px;
+  left: 150px;
   z-index: 1;
 }
 
 .marker-score-1 {
   width: 110px;
   position:absolute;
-  top: 364px;
-  left: 146px;
+  top: 389px;
+  left: 166px;
   z-index: 2;
 }
 
 .marker-score-2 {
   width: 110px;
   position:absolute;
-  top: 364px;
-  left: 274px;
+  top: 389px;
+  left: 294px;
   z-index: 2;
 }
 
 .marker-score-3 {
   width: 110px;
   position:absolute;
-  top: 364px;
-  left: 398px;
+  top: 389px;
+  left: 418px;
   z-index: 2;
 }
 
 .marker-score-4 {
   width: 110px;
   position:absolute;
-  top: 364px;
-  left: 529px;
+  top: 389px;
+  left: 549px;
   z-index: 2;
 }
 
 .marker-score-5 {
   width: 110px;
   position:absolute;
-  top: 364px;
-  left: 655px;
+  top: 389px;
+  left: 675px;
   z-index: 2;
 }
 
 .marker-round-1 {
   width: 84px;
   position:absolute;
-  top: 558px;
-  left: 148px;
+  top: 583px;
+  left: 168px;
   z-index: 2;
 }
 
 .marker-round-2 {
   width: 84px;
   position:absolute;
-  top: 558px;
-  left: 250px;
+  top: 583px;
+  left: 270px;
   z-index: 2;
 }
 
 .marker-round-3 {
   width: 84px;
   position:absolute;
-  top: 558px;
-  left: 353px;
+  top: 583px;
+  left: 373px;
   z-index: 2;
 }
 
 .marker-round-4 {
   width: 84px;
   position:absolute;
-  top: 558px;
-  left: 456px;
+  top: 583px;
+  left: 476px;
   z-index: 2;
 }
 
 .marker-round-5 {
   width: 84px;
   position:absolute;
-  top: 558px;
-  left: 558px;
+  top: 583px;
+  left: 578px;
   z-index: 2;
 }

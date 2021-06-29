@@ -6,6 +6,8 @@ function CharCard({cardStatus, cardParams}) {
     const {me, twoRow, membersToChoose, setMembersToChoose, membersChosen, setMembersChosen, roomInfo, assassinate} = cardParams
     const {name, me:isMe, character, isLeader, isAssigned, vote} = cardStatus
     const [selected, setSelected] = useState(false)
+
+    console.log(twoRow)
     let teamDir = ''
     const charDict = {
         'GM': 'images/good_people_merlin.jpg',
@@ -66,11 +68,9 @@ function CharCard({cardStatus, cardParams}) {
     }
     useEffect(() => {
         if(selected){
-            // message.info(`selected ${name}`)
             setMembersToChoose(prev => prev - 1)
             setMembersChosen([...membersChosen, name])
         } else {
-            // message.info(`unselected ${name}`)
             setMembersToChoose(prev => prev + 1)
             setMembersChosen(membersChosen.filter(person => person !== name))
         }        
@@ -78,7 +78,7 @@ function CharCard({cardStatus, cardParams}) {
     const me_name = isMe? `${name}⭐`:name 
     return (
         <>
-            <p align='center' style={{lineHeight: '12px'}}>{me_name}</p>
+            <p align='center' style={{lineHeight: '8px'}}>{me_name}</p>
             <img className={cardClass} src={charDir} onClick={clickHandler}/><br />
             <img className={markerClass} src={voteDir}/>
             <img className={markerClass} src={teamDir}/>
