@@ -17,7 +17,6 @@ import Player from "./backend/resolvers/Player.js";
 import Room from "./backend/resolvers/Room.js";
 import Message from "./backend/resolvers/Message.js";
 import mongo from "./backend/mongo.js";
-import apiRoute from "./backend/route/api.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const port = process.env.PORT || 80;
@@ -27,7 +26,6 @@ const pubsub = new PubSub();
 const app = express();
 
 app.use(cors());
-app.use("/api", apiRoute);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "build")));
 app.get("/*", function (req, res) {
