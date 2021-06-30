@@ -30,8 +30,8 @@ const ChatRoom = ({me, displayStatus, roomName}) => {
       <Input.Search
         value={messageInput}
         onChange={(e) => setMessageInput(e.target.value)}
-        placeholder="Enter message here...."
-        enterButton="Send"
+        placeholder="輸入訊息"
+        enterButton="送出"
         size="large"
         
         onSearch={ (msg) => { 

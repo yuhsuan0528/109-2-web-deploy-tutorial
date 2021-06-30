@@ -90,7 +90,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
         if(checkNameUsed(createRoomName)){
           displayStatus({
             type:"error",
-            msg: "Room Name is Used! Please Enter another name!",
+            msg: "這個房名有人用過了！請換一個名稱",
           });
         }
         else{
@@ -324,7 +324,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
       onCancel={() => handleCancel("password")} 
       width={600}>
       請輸入房間密碼：
-      <Input placeholder="Input Password" onChange={handlePassword}/>
+      <Input placeholder="輸入密碼" onChange={handlePassword}/>
     </Modal>
 
     <Modal title="建立房間" 
@@ -333,7 +333,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
       onCancel={() => handleCancel("create")} 
       width={600}>
       <p>
-      請輸入房間名稱： <Input placeholder="Input Room Name" size="middle" style={{ width: 300 }} onChange={handleCreateRoomName}/>
+      請輸入房間名稱： <Input placeholder="輸入房間名稱" size="middle" style={{ width: 300 }} onChange={handleCreateRoomName}/>
       </p>
       <p> 請選擇遊戲人數：
         <Select defaultValue="5" style={{ width: 120 }} onChange={handleCreateRoomNum}>

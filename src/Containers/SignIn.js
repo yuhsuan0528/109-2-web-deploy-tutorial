@@ -16,8 +16,8 @@ const SignIn = ({ me, setMe, setSignedIn, displayStatus }) => {
         prefix={<UserOutlined />} // 產生人頭的圖案
         value={me}
         onChange={(e) => setMe(e.target.value)}
-        placeholder="Enter your name"
-        enterButton="Sign In"
+        placeholder="請輸入名字"
+        enterButton="登入"
         size="large"
         style={{width: 300, margin: 50}}
         onSearch={ async (name) => { 

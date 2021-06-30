@@ -2,7 +2,7 @@ import '../../App.css';
 import { Image  } from "antd";
 
 const CharacterTable = ({playerNum, players}) => {
-  const size = (playerNum === 10 ) ? 65 : 75; 
+  const size = (playerNum === 10 ) ? 64 : 75; 
   return(
     <>
       <div> 已加入玩家: 
