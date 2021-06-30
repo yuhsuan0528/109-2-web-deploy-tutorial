@@ -12,7 +12,7 @@ const ChooseCup = ({name, roomName, cupped, setCupped}) => {
   return (
     <>
     {
-      cupped ? (<h1> <Spin /> 出完任務了！請等待其他玩家喔 </h1>):
+      cupped ? (<h1> <Spin /> 出完任務了！等待其他玩家 </h1>):
       (<>
       <h1> 請出任務 </h1>
       <div className="right-side-vote-area"> 

@@ -269,7 +269,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 cardContent === "cup" ? <ChooseCup name={me} roomName={roomName} cupped={cupped} setCupped={setCupped}/> : 
                 cardContent === "team" ? <ChoosePeople number={membersToChoose} membersChosen={membersChosen} roomName={roomName} leaderName={me} setMembersChosen={setMembersChosen}/> :
                 cardContent === "wait_cup" ?  <h1> <Spin />等待其他玩家出任務 </h1> :
-                cardContent === "isAssassin" ? <h1> 請刺客刺殺梅林 </h1> :
+                cardContent === "isAssassin" ? <h1> 請刺客刺殺梅林 (點選卡牌) </h1> :
                 cardContent === "WaitAssassin" ? <h1> <Spin />等待刺客刺殺梅林 </h1> :
                 cardContent === "SomeoneMissing" ? <h1> 有玩家離開房間... 請等待 </h1> : 
                 <h1> <Spin />等待其他玩家派票 </h1>
