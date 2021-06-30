@@ -6,7 +6,7 @@ function Board({status, roomInfo}) {
     const scoreNum = Array.from({length: score.length}, (_, index) => index + 1);
     const num = roomInfo.num_of_players
     return (
-        <div style={{margin: "0px auto"}}>
+        <div>
             <img className={`board`} src={`images/point_record_board_${num}.jpg`} />
             {scoreNum.map((num, index) => <img key={index} className={`marker-score-${num}`} src={score[num-1]? "images/marker_score_success.png":"images/marker_score_fail.png"} />)}
             {roundNum.map((num, index) => (<img key={index} className={`marker-round-${num}`} src="images/marker_round.png" />))}

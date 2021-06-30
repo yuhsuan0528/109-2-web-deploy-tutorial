@@ -77,7 +77,7 @@
 .right-side-messagebox {
   width: 450px;
   height: 310px;
-  background: #DAD8D8;
+  background: #c6c6c6;
   border-radius: 5px;
   overflow: auto;
   margin:0px auto;
@@ -191,11 +191,11 @@ button[disabled]{
 .right-side-button {
   top:10px;
   margin: 5px;
-  font-size:15px;
+  font-size:16px;
   border: none;
   color: white;
-  width:85px;
-  height:33px;
+  width:90px;
+  height:35px;
   cursor: pointer;
   background-color: #F09016;
 }
@@ -251,9 +251,9 @@ button[disabled]{
 
 .board {
   width: 650px;
-  /* position:absolute;
+  position:absolute;
   top: 260px;
-  left: 150px; */
+  left: 150px;
   z-index: 1;
 }
 
