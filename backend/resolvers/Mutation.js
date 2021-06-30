@@ -187,6 +187,8 @@ const Mutation = {
           });
         }
       }
+      if (i === 0) myself.is_leader = true;
+      else myself.is_leader = false;
       myself.is_assigned = false;
       myself.vote = 'null';
       myself.players_list = [];
