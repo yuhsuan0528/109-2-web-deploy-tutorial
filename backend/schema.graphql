@@ -16,7 +16,6 @@ type Mutation {
 	cup(roomName: String!, playerName: String!, agree: Boolean!): String!
 	assassin(roomName: String!, playerName: String!, targetName: String!): String!
 	leaveRoom(roomName: String!, playerName: String!): String!
-	closeRoom(roomName: String!, playerName: String!): String!
 }
 
 type Subscription {
