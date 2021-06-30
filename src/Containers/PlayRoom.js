@@ -118,7 +118,8 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
     membersChosen: membersChosen,
     setMembersChosen: setMembersChosen,
     roomInfo:roomInfo,
-    assassinate: assassinate
+    assassinate: assassinate,
+    setStatus: setPlayerStatus
   }
 
   const rightsideParams = {

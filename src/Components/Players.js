@@ -4,13 +4,21 @@ import {message} from 'antd'
 import {useEffect, useState} from 'react'
 
 function Players({playersParams}) {
-    const {me, status, setMembersToChoose, setMembersChosen , membersChosen, membersToChoose, roomInfo, assassinate} = playersParams
+    const {me, status, setMembersToChoose, setMembersChosen, membersChosen, membersToChoose, roomInfo, assassinate} = playersParams
     const [twoRow, setTwoRow] = useState(false)
+
     useEffect(() => {
         const statusMe = status.find(player => player.name === me)
-        console.log(statusMe)
         if (statusMe && roomInfo){
-            if (statusMe.isLeader && roomInfo.status.includes('assign')) message.info(`目前隊員: ${membersChosen}`)
+            if (statusMe.isLeader && roomInfo.status.includes('assign')) {
+                message.info(`目前隊員: ${membersChosen}`)
+                // let newStatus = status
+                // for(let i=0;i<status.length; i++){
+                //     if (membersChosen.includes(newStatus[i].name)) newStatus[i].isAssigned = true
+                //     else newStatus[i].isAssigned = false
+                // }
+                // setStatus(newStatus)
+            }
         }
         
     },[membersChosen])
