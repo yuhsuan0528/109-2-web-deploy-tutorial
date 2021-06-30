@@ -22,7 +22,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
   const [assassinate] = useMutation(ASSASSIN_MUTATION)
 
   // ----------- gameInfo -------------------
-  const { loading, error, data, subscribeToMore } = useQuery(GAMEINFO_QUERY,{variables: { roomName: roomName},});
+  const { loading, data, subscribeToMore } = useQuery(GAMEINFO_QUERY,{variables: { roomName: roomName},});
 
   useLayoutEffect( () => {
     try {
@@ -79,7 +79,6 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
 
   useEffect(()=>{
     if (roomInfo.status){
-      console.log(roomInfo)
       if (roomInfo.status.includes("assign") || roomInfo.status.includes("vote")){
         let newRound = parseInt(roomInfo.status.slice(-1))-1
         setGameStatus(prev => ({... prev, round: newRound}))

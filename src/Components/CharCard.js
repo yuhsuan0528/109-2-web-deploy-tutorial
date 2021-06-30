@@ -47,7 +47,7 @@ function CharCard({cardStatus, cardParams}) {
         }
         const playerListSelf = self.players_list.find(player => player.name === me)
         if (roomInfo.status.includes('assassin') && playerListSelf.character === 'A'){
-            message.info(`assassinate ${name}`)
+            message.info(`刺殺 ${name}`)
             assassinate({
                 variables:{
                   roomName: roomInfo.name,

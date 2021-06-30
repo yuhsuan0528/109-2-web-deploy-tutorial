@@ -42,7 +42,7 @@ const App = () => {
 
   
   return (
-    <div >
+    <div className="App">
       {signedIn ? inRoom ? (<PlayRoom me={me} displayStatus={displayStatus} roomName={roomName} setInRoom={setInRoom} />) :
         (<GameLobby me={me} setInRoom={setInRoom} inRoom={inRoom} displayStatus={displayStatus} setRoomName={setRoomName} />) : 
         (<SignIn me={me} setMe={setMe} setSignedIn={setSignedIn} displayStatus={displayStatus} />)}

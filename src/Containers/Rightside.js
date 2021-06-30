@@ -19,7 +19,7 @@ import GoodVictoryAnime from '../Components/Anime/GoodVictoryAnime.js';
 import BadVictoryAnime from '../Components/Anime/BadVictoryAnime.js';
 
 const Rightside = ({rightsideParams}) => {
-const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersChosen, setMembersToChoose, setInRoom} = rightsideParams;
+const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, setMembersChosen, setMembersToChoose, setInRoom} = rightsideParams;
  const assignedNumberList = {5: [2,3,2,3,3],
                               6: [2,3,4,3,4],
                               7: [2,3,3,4,4],

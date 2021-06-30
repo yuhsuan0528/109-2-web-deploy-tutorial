@@ -42,7 +42,6 @@ const ChatRoom = ({me, displayStatus, roomName}) => {
             });
             return;
           }
-          console.log(msg)
           try{
              createMessage({
               variables:{

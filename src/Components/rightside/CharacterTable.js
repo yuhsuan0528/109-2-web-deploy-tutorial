@@ -1,5 +1,5 @@
 import '../../App.css';
-import { Image  } from "antd";
+import { Image, Space  } from "antd";
 
 const CharacterTable = ({playerNum, players}) => {
   const size = (playerNum === 10 ) ? 64 : 75; 
@@ -11,7 +11,8 @@ const CharacterTable = ({playerNum, players}) => {
       }
       </div>
 
-      <p> 
+      <Space direction="vertical">
+        <Space>
         <Image width={size} className="right-side-character-card" src="images/good_people_merlin.jpg"/> 
         <Image width={size} className="right-side-character-card" src="images/good_people_percival.jpg"/>
         <Image width={size} className="right-side-character-card" src="images/good_people_normal_1.jpg"/>
@@ -24,8 +25,8 @@ const CharacterTable = ({playerNum, players}) => {
                              <Image width={size} className="right-side-character-card" src="images/good_people_normal_3.jpg"/> 
                              <Image width={size} className="right-side-character-card" src="images/good_people_normal_4.jpg"/></> ) : <div></div>
         }
-      </p>    
-      <p>  
+      </Space>    
+      <Space>  
         <Image width={size} className="right-side-character-card" src="images/bad_people_assassin.jpg"/> 
         <Image width={size} className="right-side-character-card" src="images/bad_people_morgana.jpg"/>
         {
@@ -35,7 +36,8 @@ const CharacterTable = ({playerNum, players}) => {
           playerNum === 10 ? <><Image width={size} className="right-side-character-card" src="images/bad_people_mordred.jpg"/>
           <Image width={size} className="right-side-character-card" src="images/bad_people_oberon.jpg"/></> : <div></div>
         }
-      </p>
+      </Space>
+    </Space>
 
     </>
   )

@@ -82,7 +82,6 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
              playerName: me,
              keyword: ""}
          })
-          console.log(data);
        }
        catch(e){
          console.log(e)
@@ -95,7 +94,6 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
         }
         else{
           setIsModalVisible_create(false);
-          console.log(createRoomPW);
            createRoom({
             variables:{
               roomName: createRoomName,
@@ -148,7 +146,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
     }
   };
   // handle with GraphQL
-  const { loading, error, data, subscribeToMore } = useQuery(ROOM_QUERY, {
+  const { loading, data, subscribeToMore } = useQuery(ROOM_QUERY, {
                                                                       variables:{ playerName: me},
                                                                         });
    useLayoutEffect(() => {
@@ -183,14 +181,12 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
         for(var j=0; j<data.rooms[i].players.length; j++){
           if(data.rooms[i].players[j] !== null){
             if(data.rooms[i].players[j].name === me){
-            console.log('true')
             return true
             }
           } 
         }
       }
     }
-    console.log('false')
     return false;
   }
 

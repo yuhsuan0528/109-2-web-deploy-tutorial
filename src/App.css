@@ -12,8 +12,12 @@
 /* -------------
   GAME LOBBY
   -------------- */
-
 @import url(//fonts.googleapis.com/earlyaccess/notosanstc.css);
+.App{
+  font-family: "Noto Sans TC", "FangSong", Arial, serif;
+}
+
+
 .game-lobby-main-block{
   font-family: "Noto Sans TC", "FangSong", Arial, serif;
   display: flex;
@@ -76,9 +80,12 @@
 }
 
 .right-side-messagebox {
+  border-style:solid;
+  border-color: #E5E7E9;
+  border-width: 2px;
   width: 450px;
   height: 310px;
-  background: #c6c6c6;
+  background: #ffffff;
   border-radius: 5px;
   overflow: auto;
   margin:0px auto;
