@@ -4,11 +4,9 @@ import { gql } from '@apollo/client';
 export const ROOM_QUERY = gql`
   query rooms(
     $playerName: String!
-    $keyword: String
   ) {
     rooms(
       playerName: $playerName
-      keyword: $keyword
     ) {
       name
       host

@@ -22,10 +22,10 @@ const ChooseVote = ({name, roomName, voted, setVoted}) => {
       <div className="right-side-vote-button-area"> 
         <button 
         className="right-side-vote-button" 
-        onClick={ async () => {
+        onClick={  () => {
           // console.log('click');
           try{
-            await vote({
+             vote({
             variables:{
                 roomName: roomName,
                 playerName: name,
@@ -40,9 +40,9 @@ const ChooseVote = ({name, roomName, voted, setVoted}) => {
         }}>同意</button>
         <button 
         className="right-side-vote-button" 
-        onClick={ async () => {
+        onClick={ () => {
           try{
-            await vote({
+           vote({
             variables:{
                 roomName: roomName,
                 playerName: name,
