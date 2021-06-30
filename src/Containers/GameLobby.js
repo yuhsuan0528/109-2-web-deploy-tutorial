@@ -44,7 +44,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
       if(passwordInput === ""){
         displayStatus({
           type:"error",
-          msg: "Missing Password",
+          msg: "請輸入密碼",
         });
       }
       else {
@@ -69,38 +69,45 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
       }
     }
     else if (type === "create"){
-      try{
-        await searchRoom({
-       variables:{
-           playerName: me,
-           keyword: ""
-         }
-       })
-        console.log(data);
-     }
-     catch(e){
-       console.log(e)
-     }
-      if(checkNameUsed(createRoomName)){
+      if(createRoomName === ""){
         displayStatus({
           type:"error",
-          msg: "Room Name is Used! Please Enter another name!",
+          msg: "請輸入房間名稱",
         });
       }
       else{
-        setIsModalVisible_create(false);
-        console.log(createRoomPW);
-         createRoom({
-          variables:{
-            roomName: createRoomName,
-            hostName: me,
-            num: createRoomNum,
-            passwd: createRoomPW,
-          }
-        })
-        setRoomName(createRoomName);
-        setInRoom(true);
-      }   
+        try{
+        await searchRoom({
+         variables:{
+             playerName: me,
+             keyword: ""}
+         })
+          console.log(data);
+       }
+       catch(e){
+         console.log(e)
+       }
+        if(checkNameUsed(createRoomName)){
+          displayStatus({
+            type:"error",
+            msg: "Room Name is Used! Please Enter another name!",
+          });
+        }
+        else{
+          setIsModalVisible_create(false);
+          console.log(createRoomPW);
+           createRoom({
+            variables:{
+              roomName: createRoomName,
+              hostName: me,
+              num: createRoomNum,
+              passwd: createRoomPW,
+            }
+          })
+          setRoomName(createRoomName);
+          setInRoom(true);
+        }   
+      } 
     }
   };
 
@@ -174,13 +181,16 @@ console.log(data);
     for(var i=0; i<data.rooms.length; i++){    
       if(data.rooms[i].name === name){
         for(var j=0; j<data.rooms[i].players.length; j++){
-          if(data.rooms[i].players[j].name === me){
+          if(data.rooms[i].players[j] !== null){
+            if(data.rooms[i].players[j].name === me){
+            console.log('true')
             return true
-          }
-          
+            }
+          } 
         }
       }
     }
+    console.log('false')
     return false;
   }
 
@@ -253,7 +263,29 @@ console.log(data);
                 
                 <div className="game-lobby-button">
                   { 
-                    players.length >= num_of_players && !checkIsMemberInRoom(name) ? <Button bordered={false} block={true} disabled={true} size="large"> <FrownOutlined /> 房間已滿</Button> :
+                    players.length >= num_of_players && !checkIsMemberInRoom(name) ? <Button bordered={false} block={true} disabled={true} size="large"> <FrownOutlined/> 房間已滿</Button> :
+                    checkIsMemberInRoom(name) ? <Button 
+                    bordered={false} 
+                    block={true} 
+                    size="large" 
+                    onClick={  () => {     
+                          try{
+                            joinRoom({
+                            variables:{
+                                roomName: name,
+                                playerName: me,
+                                passwd: passwd,
+                              }
+                            })
+                            setRoomName(name);
+                            setInRoom(true);   
+                          }
+                          catch(e){
+                            // console.log(e)
+                          }
+                          }}> 
+                      <UserAddOutlined />加入房間
+                    </Button> :
                     passwd !== "#$%#$%#$%#$%#$%#$%#$%" ? <Button bordered={false} block={true} size="large" onClick={() => showModal("password", name)}> <UserAddOutlined />加入房間</Button> :
                     <Button 
                     bordered={false} 
