@@ -13,14 +13,13 @@ import ChoosePeople from "../Components/rightside/ChoosePeople.js";
 import {
   START_GAME_MUTATION,
   LEAVE_ROOM_MUTATION,
-  CLOSE_ROOM_MUTATION
 } from "../graphql"
 import StartAnime from '../Components/Anime/StartAnime.js';
 import GoodVictoryAnime from '../Components/Anime/GoodVictoryAnime.js';
 import BadVictoryAnime from '../Components/Anime/BadVictoryAnime.js';
 
 const Rightside = ({rightsideParams}) => {
-const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersChosen, setMembersToChoose, setInRoom, roomsData} = rightsideParams;
+const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersChosen, setMembersChosen, setMembersToChoose, setInRoom} = rightsideParams;
  const assignedNumberList = {5: [2,3,2,3,3],
                               6: [2,3,4,3,4],
                               7: [2,3,3,4,4],
@@ -95,7 +94,6 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
   // handle GraphQL
   const [startGame] = useMutation(START_GAME_MUTATION);
   const [leaveRoom] = useMutation(LEAVE_ROOM_MUTATION);
-  const [closeRoom] = useMutation(CLOSE_ROOM_MUTATION);
 
   const checkLeader = () => {
     for(var i=0; i<roomInfo.players.length; i++){
@@ -126,7 +124,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
     return roomInfo.players.length < roomInfo.num_of_players
   }
 
-  const checkRoomClosed = () => {
+  /*const checkRoomClosed = () => {
     const roomExist = roomsData.rooms.find(room => room.name === roomName)
     if(roomExist === undefined ) return true;
     else return false; 
@@ -136,7 +134,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
     if (checkRoomClosed() && Object.keys(roomInfo).length !== 0){
         setCardContent("roomClosed");
       }
-  },[roomsData])
+  },[roomsData])*/
 
   useEffect(()=>{
     if(Object.keys(roomInfo).length !== 0){
@@ -215,48 +213,13 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
     }
   },[roomInfo.status])
 
-
- 
-
   return (
     <>
           
           <div className="right-side-top-area">
             房間名稱：{roomName}
-            { roomInfo.host === me ?  
+            {  
               <Popconfirm
-                title="確定要關閉房間嗎？"
-                visible={visible_confirmCloseRoom}
-                onConfirm={async () => {
-                    try{
-                        await closeRoom({
-                        variables:{
-                            roomName: roomName,
-                            playerName: me,
-                          }
-                        })
-                        setInRoom(false)
-                        setVisible_confirmCloseRoom(false);
-                      }
-                      catch(e){
-                        console.log(e);
-                      }  
-                  }}
-                onCancel={() => handleCancel("conirmCloseRoom")}
-              >
-              {
-                gameStarted ? 
-                 <button 
-                  className="right-side-leave-room-button" 
-                  bordered={false}
-                  onClick={() => setVisible_confirmCloseRoom(true)} disabled>關閉房間</button>  : 
-                   <button 
-                  className="right-side-leave-room-button" 
-                  bordered={false}
-                  onClick={() => setVisible_confirmCloseRoom(true)}>關閉房間</button> 
-              }
-                  </Popconfirm> : 
-                <Popconfirm
                 title="確定要離開房間嗎？"
                 visible={visible_confirmLeaveRoom}
                 onConfirm={async () => {
@@ -286,10 +249,8 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                   bordered={false}
                   onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</button>
                 }
-                
-
-                  </Popconfirm>
-                  }
+              </Popconfirm>
+            }
                
            </div>
            <div className="right-side-character-board">
@@ -302,6 +263,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 showStartAnime ?<StartAnime/> : 
                 showGoodWinAnime ? <GoodVictoryAnime/> :
                 showBadWinAnime ? <BadVictoryAnime/> :
+                //cardContent === "roomClosed" ? <h1> 房間已關閉.... 請重新開啟遊戲</h1>:
                 cardContent === "character" ?  <CharacterTable playerNum={roomInfo.num_of_players} players={roomInfo.players}/> : 
                 cardContent === "vote" ? <ChooseVote name={me} roomName={roomName} voted={voted} setVoted={setVoted}/> : 
                 cardContent === "cup" ? <ChooseCup name={me} roomName={roomName} cupped={cupped} setCupped={setCupped}/> : 
@@ -309,8 +271,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 cardContent === "wait_cup" ?  <h1> <Spin />等待其他玩家出任務 </h1> :
                 cardContent === "isAssassin" ? <h1> 請刺客刺殺梅林 </h1> :
                 cardContent === "WaitAssassin" ? <h1> <Spin />等待刺客刺殺梅林 </h1> :
-                cardContent === "SomeoneMissing" ? <h1> 有玩家離開房間... 請等待 </h1> :
-                cardContent === "roomClosed" ? <h1> 房間已關閉.... 請重新開啟遊戲</h1>:
+                cardContent === "SomeoneMissing" ? <h1> 有玩家離開房間... 請等待 </h1> : 
                 <h1> <Spin />等待其他玩家派票 </h1>
               }
               
@@ -327,7 +288,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 (roomInfo.host === me && !gameStarted )? <Button 
                 className="right-side-button" 
                 bordered={false} 
-                onClick={ async () => {
+                onClick={ () => {
                   if(roomInfo.num_of_players !== roomInfo.players.length) {
                     displayStatus({
                         type:"error",
@@ -336,7 +297,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                   }
                   else{
                     try{
-                      await startGame({
+                       startGame({
                       variables:{
                           roomName: roomName,
                           playerName: me,
@@ -435,30 +396,71 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
 export default Rightside;
 
 /* 
-<Button className="right-side-button" bordered={false} onClick={() => setCardContent("character")}>看角色</Button>
-Test Data
-const cupResults = [
-    {good: 1, bad: 1, player: [1,2]},
-    {good: 3, bad: 0, player: [1,2,4]},
-    {good: 2, bad: 1, player: [2,4,5]},
-  ]
-
-  const voteResults = [
-    [
-      ['W','W','B','B','B'],
-      ['W','W','W','W','W']
-    ],
-    [
-      ['W','B','B','B','B'],
-      ['B','B','B','W','W'],
-      ['W','W','B','B','B'],
-      ['W','W','W','W','W']
-    ]   
-  ]
-
-  { 
-                  voteResults[voteResults.length-1].vote[voteResults[voteResults.length-1].vote.length-1][index] === 'T' ? 
-                  <img className="right-side-cup-card" src="images/symbol_vote_yay.jpg" key={`vote_yay_${index}`} alt="1"/>:
-                  <img className="right-side-cup-card" src="images/symbol_vote_nay.jpg" key={`vote_nay_${index}`} alt="1"/>
+<Popconfirm
+                title="確定要關閉房間嗎？"
+                visible={visible_confirmCloseRoom}
+                onConfirm={async () => {
+                    try{
+                        await closeRoom({
+                        variables:{
+                            roomName: roomName,
+                            playerName: me,
+                          }
+                        })
+                        setInRoom(false)
+                        setVisible_confirmCloseRoom(false);
+                      }
+                      catch(e){
+                        console.log(e);
+                      }  
+                  }}
+                onCancel={() => handleCancel("conirmCloseRoom")}
+              >
+              {
+                gameStarted ? 
+                 <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={() => setVisible_confirmCloseRoom(true)} disabled>關閉房間</button>  : 
+                   <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={() => setVisible_confirmCloseRoom(true)}>關閉房間</button> 
+              }
+                  </Popconfirm> : 
+                <Popconfirm
+                title="確定要離開房間嗎？"
+                visible={visible_confirmLeaveRoom}
+                onConfirm={async () => {
+                    try{
+                        await leaveRoom({
+                        variables:{
+                            roomName: roomName,
+                            playerName: me,
+                          }
+                        })
+                        setInRoom(false)
+                        setVisible_confirmLeaveRoom(false);
+                      }
+                      catch(e){
+                        console.log(e);
+                      }  
+                  }}
+                onCancel={() => handleCancel("conirmLeaveRoom")}
+                > 
+                {
+                  gameStarted ? <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={()=>setVisible_confirmLeaveRoom(true)} disabled>離開房間</button> : 
+                  <button 
+                  className="right-side-leave-room-button" 
+                  bordered={false}
+                  onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</button>
                 }
+                
+
+                  </Popconfirm>
+            }
+
   */

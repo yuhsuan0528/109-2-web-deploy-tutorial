@@ -8,6 +8,7 @@ export const ROOM_SUBSCRIPTION = gql`
           name
           host
           num_of_players
+          passwd
            players {
               name
             }

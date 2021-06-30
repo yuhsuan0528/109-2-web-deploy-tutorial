@@ -34,7 +34,7 @@ const ChatRoom = ({me, displayStatus, roomName}) => {
         enterButton="Send"
         size="large"
         
-        onSearch={async (msg) => { 
+        onSearch={ (msg) => { 
           if(!msg){
             displayStatus({
               type: "error",
@@ -44,7 +44,7 @@ const ChatRoom = ({me, displayStatus, roomName}) => {
           }
           console.log(msg)
           try{
-            await createMessage({
+             createMessage({
               variables:{
                 roomName: roomName,
                 playerName: me,

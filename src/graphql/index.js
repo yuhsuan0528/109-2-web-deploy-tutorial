@@ -1,5 +1,5 @@
 export { ROOM_QUERY } from './login_gameLobby/queries';
-export { CREATE_ROOM_MUTATION, JOIN_ROOM_MUTATION, SIGN_IN_MUTATION } from './login_gameLobby/mutations';
+export { CREATE_ROOM_MUTATION, JOIN_ROOM_MUTATION, SIGN_IN_MUTATION, SEARCH_ROOM } from './login_gameLobby/mutations';
 export { ROOM_SUBSCRIPTION } from './login_gameLobby/subscriptions';
 
 export { ROOMCHAT_QUERY } from './chatbox/queries';

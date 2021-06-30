@@ -42,6 +42,18 @@ export const SIGN_IN_MUTATION = gql`
   }
 `;
 
+export const SEARCH_ROOM = gql`
+mutation searchRoom(
+    $playerName: String!
+    $keyword: String
+  ) {
+    searchRoom (
+      playerName: $playerName
+      keyword: $keyword
+    )
+  }
+`;
+
 /* for reference
 export const CREATE_CHATBOX_MUTATION = gql`
   mutation createChatBox(

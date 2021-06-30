@@ -1,17 +1,20 @@
 import "../App.css";
 import { Button, Space, Divider, Tag, Modal, Input, Select, Switch } from "antd";
 import { useState, useLayoutEffect } from "react";
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { UserAddOutlined, FrownOutlined, UserOutlined, TagOutlined, LockOutlined } from '@ant-design/icons';
 import {
+  ROOM_QUERY,
+  ROOM_SUBSCRIPTION,
   CREATE_ROOM_MUTATION,
-  JOIN_ROOM_MUTATION
+  JOIN_ROOM_MUTATION,
+  SEARCH_ROOM
 } from '../graphql';
 
 
 const { Option } = Select;
 
-const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loading, setSearchRoomName}) => {
+const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
 
   const [isModalVisible_password, setIsModalVisible_password] = useState(false);
   const [isModalVisible_create, setIsModalVisible_create] = useState(false);
@@ -25,7 +28,6 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
   const [targetRoomName, setTargetRoomName] = useState("");
 
   const [inputName, setInputName] = useState("");
-  
 
   
   // handle with modals
@@ -37,7 +39,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
     else if(type === "create") setIsModalVisible_create(true);
   };
 
-  const handleOk = async (type) => {
+  const handleOk =  async (type) => {
     if(type === "password"){
       if(passwordInput === ""){
         displayStatus({
@@ -67,6 +69,18 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
       }
     }
     else if (type === "create"){
+      try{
+        await searchRoom({
+       variables:{
+           playerName: me,
+           keyword: ""
+         }
+       })
+        console.log(data);
+     }
+     catch(e){
+       console.log(e)
+     }
       if(checkNameUsed(createRoomName)){
         displayStatus({
           type:"error",
@@ -76,7 +90,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
       else{
         setIsModalVisible_create(false);
         console.log(createRoomPW);
-        await createRoom({
+         createRoom({
           variables:{
             roomName: createRoomName,
             hostName: me,
@@ -127,12 +141,33 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName, data, loa
     }
   };
   // handle with GraphQL
-  
+  const { loading, error, data, subscribeToMore } = useQuery(ROOM_QUERY, {
+                                                                      variables:{ playerName: me},
+                                                                        });
+   useLayoutEffect(() => {
+    try {
+      subscribeToMore({
+        document: ROOM_SUBSCRIPTION,
+        variables:{ playerName: me},
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          // console.log(subscriptionData.data)
+          // console.log(subscriptionData.data.room.data)
+          const newRoom = subscriptionData.data.room.data;
+          return { rooms: newRoom};
+          //return newRoom;
+        },
+      });
+    } catch (e) {
+      // console.log(e);
+    }
+  }, [subscribeToMore, inRoom]);
 
   const [createRoom] = useMutation(CREATE_ROOM_MUTATION);
   const [joinRoom] = useMutation(JOIN_ROOM_MUTATION);
+  const [searchRoom] = useMutation(SEARCH_ROOM);
 
-
+console.log(loading)
 console.log(data);
 
   const checkIsMemberInRoom = (name) => {
@@ -150,9 +185,10 @@ console.log(data);
   }
 
   const checkNameUsed = (name) => {
-    const sameName = data.rooms.find(room => room.name === name);
-    if(sameName === undefined) return false;
-    else return true;
+    
+     const sameName = data.rooms.find(room => room.name === name);
+     if(sameName === undefined) return false;
+     else return true;
   }
 
   return (
@@ -163,17 +199,49 @@ console.log(data);
       <Space>
         <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => showModal("create", '_')}>建立房間</Button>
         <Input style={{ width: 200 }} placeholder="搜尋房間" onChange={handleSearchRoomName}/>
-        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName(inputName)}>搜尋房間</Button>
-        <Button className="game-lobby-main-button" bordered={false} size="large" onClick={() => setSearchRoomName('')}>顯示所有房間</Button>
+        <Button 
+        className="game-lobby-main-button" 
+        bordered={false} size="large" 
+        onClick={() => {     
+                try{
+                   searchRoom({
+                  variables:{
+                      playerName: me,
+                      keyword: inputName
+                    }
+                  })
+                }
+                catch(e){
+                  console.log(e)
+                }
+                }}>搜尋房間</Button>
+        <Button 
+        className="game-lobby-main-button" 
+        bordered={false} size="large" 
+        onClick={ () => {     
+                try{
+                   searchRoom({
+                  variables:{
+                      playerName: me,
+                      keyword: ""
+                    }
+                  })   
+                }
+                catch(e){
+                  console.log(e)
+                }
+                }}>顯示所有房間</Button>
       </Space>
       </div>
       <Space direction="vertical" split={<Divider />}>
-        { loading?  (<div> Loading </div>) : 
-          data.rooms.map( ({name, players, num_of_players, passwd}, index) => 
+        { loading ?  (<div> Loading </div>) : 
+          data === undefined ? <div></div> :
+          data.rooms.map( ({name, players, num_of_players, passwd, host}, index) => 
             (<Space key={`room${index}`}>
               <div className="game-lobby-room">
                 <p className="game-lobby-room-name"> {name}
                   <div> 
+                    <Tag color="#F1C40F "> 房主：{host} </Tag>
                     <Tag color="#A6C2CE" icon={<UserOutlined />}> {players.length}/{num_of_players} </Tag>
                     <Tag color="#BCBCBC" ><TagOutlined />{` room_${index}`}</Tag>
                     {
@@ -191,9 +259,9 @@ console.log(data);
                     bordered={false} 
                     block={true} 
                     size="large" 
-                    onClick={ async () => {     
+                    onClick={  () => {     
                           try{
-                            await joinRoom({
+                            joinRoom({
                             variables:{
                                 roomName: name,
                                 playerName: me,
@@ -230,7 +298,7 @@ console.log(data);
     <Modal title="建立房間" 
       visible={isModalVisible_create} 
       onOk={() => handleOk("create")} 
-      onCancel={() => handleOk("create")} 
+      onCancel={() => handleCancel("create")} 
       width={600}>
       <p>
       請輸入房間名稱： <Input placeholder="Input Room Name" size="middle" style={{ width: 300 }} onChange={handleCreateRoomName}/>

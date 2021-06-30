@@ -1,4 +1,6 @@
 
+const character = ['GM', 'BM', 'P', 'A', 'GN', 'GN', 'O', 'GN', 'GN', 'MO'];
+
 const validatePlayer = async (db, name) => {
   const existing = await db.PlayerModel.findOne({ name: name });
   if (existing) return existing;
@@ -12,9 +14,6 @@ const shuffle = (array)  => {
   }
   return array;
 }
-
-const character = ['GM', 'BM', 'P', 'A', 'GN', 'GN', 'O', 'GN', 'GN', 'MO'];
-
 
 const Mutation = {
   
@@ -69,16 +68,19 @@ const Mutation = {
     await host.save();
     await room.save();
 
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(host.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${hostName}`, {
-      room: {
-        data: all_rooms,
-      }
-    });
     pubsub.publish(`roomInfo ${roomName}`, {
       roomInfo: {
         data: room,
       }
+    });
+    const all_players = await db.PlayerModel.find({});
+    all_players.forEach(async (py) => {
+      const all_rooms = await db.RoomModel.find({ name: {'$regex': String(py.keyword), '$options': 'i'} });
+      pubsub.publish(`rooms ${String(py.name)}`, {
+        room: {
+          data: all_rooms,
+        }
+      });
     });
     return roomName;
   },
@@ -111,16 +113,20 @@ const Mutation = {
     await player.save();
     await room.save();
     
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${playerName}`, {
-      room: {
-        data: all_rooms,
-      }
-    });
+    // publish new room infos
     pubsub.publish(`roomInfo ${roomName}`, {
       roomInfo: {
         data: room,
       }
+    });
+    const all_players = await db.PlayerModel.find({});
+    all_players.forEach(async (py) => {
+      const all_rooms = await db.RoomModel.find({ name: {'$regex': String(py.keyword), '$options': 'i'} });
+      pubsub.publish(`rooms ${String(py.name)}`, {
+        room: {
+          data: all_rooms,
+        }
+      });
     });
     return roomName;
   },
@@ -531,13 +537,9 @@ const Mutation = {
       .populate([{path: 'players', select: 'name -_id'}])
       .execPopulate();
     
-    const player_existed = room.players.find(py => String(py.name) === String(playerName));
-    if (!player_existed) {
+    const player_idx = room.players.findIndex(py => String(py.name) === String(playerName));
+    if (player_idx < 0) {
       throw new Error("This player is not in this room.");
-    }
-
-    if (String(playerName) === String(room.host)) {
-      throw new Error("The host cannot leave the room. You can close the room.");
     }
 
     // delete players_list PlayerInfo documents
@@ -553,108 +555,72 @@ const Mutation = {
     player.players_list = [];
     await player.save();
 
-    // publish the new room info
-    const room_finished = await db.RoomModel.findOne({ name: roomName });
-    for (var i = 0; i < room_finished.players.length; i++) { 
-      if (String(room_finished.players[i]) === String(player._id)) { 
-        room_finished.players.splice(i, 1);
-      }
-    }
-    await room_finished.save();
-    pubsub.publish(`roomInfo ${roomName}`, {
-      roomInfo: {
-        data: room_finished,
-      }
-    });
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${playerName}`, {
-      room: {
-        data: all_rooms,
-      }
-    });
-    return roomName;
-  },
-
-  async closeRoom( parent, { roomName, playerName }, { db, pubsub }, info ) {
-    if (!roomName) throw new Error("Missing room name.");
-    if (!playerName) throw new Error("Missing player name.");
-    
-    const player = await validatePlayer(db, playerName);
-    let room = await db.RoomModel.findOne({ name: roomName });
-    if (!room) throw new Error("This room has not been created.");
-    room = await room
-      .populate([{path: 'players', select: 'name -_id'}])
-      .execPopulate();
-    
-    const player_existed = room.players.find(py => String(py.name) === String(playerName));
-    if (!player_existed) {
-      throw new Error("This player is not in this room.");
-    }
-
-    if (String(playerName) !== String(room.host)) {
-      throw new Error("Only the host can close the room.");
-    }
-
-    // recursively delete the related documents of all players in this room
-    const player_list = room.players.map(p => p.name);
-    for (var i = 0; i < player_list.length; i++) {
-      const my_name = player_list[i];
-      const myself = await validatePlayer(db, my_name);
-
-      // delete previous PlayerInfo documents in my players_list
-      if (myself.players_list) {
-        for (var k = 0; k < myself.players_list.length; k++) {
-          await db.PlayerInfoModel.deleteMany({ _id: myself.players_list[k] }, function (err, _) {
+    // check if the room should be closed
+    if (room.players.length <= 1) {
+      // delete messages
+      if (room.messages) {
+        for (var j = 0; j < room.messages.length; j++) {
+          await db.MessageModel.deleteMany({ _id: room.messages[j] }, function (err, _) {
             if (err) throw err;
           });
         }
       }
-      // reset this player's document
-      myself.room = null;
-      myself.is_leader = null;
-      myself.is_assigned = null;
-      myself.vote = 'null';
-      myself.players_list = [];
-      await myself.save();
-    }
-    // delete messages
-    if (room.messages) {
-      for (var j = 0; j < room.messages.length; j++) {
-        await db.MessageModel.deleteMany({ _id: room.messages[j] }, function (err, _) {
-          if (err) throw err;
-        });
+      // delete vote_results and cup_results documents
+      if (room.vote_results) {
+        for (var v = 0; v < room.vote_results.length; v++) {
+          await db.VoteResultModel.deleteMany({ _id: room.vote_results[v] }, function (err, _) {
+            if (err) throw err;
+          });
+        }
       }
-    }
-    // delete vote_results and cup_results documents
-    if (room.vote_results) {
-      for (var v = 0; v < room.vote_results.length; v++) {
-        await db.VoteResultModel.deleteMany({ _id: room.vote_results[v] }, function (err, _) {
-          if (err) throw err;
-        });
+      if (room.cup_results) {
+        for (var c = 0; c < room.cup_results.length; c++) {
+          await db.CupResultModel.deleteMany({ _id: room.cup_results[c] }, function (err, _) {
+            if (err) throw err;
+          });
+        }
       }
+      // delete the Room document itself
+      await db.RoomModel.deleteMany({ name: roomName }, function (err, _) {
+        if (err) throw err;
+      });
     }
-    if (room.cup_results) {
-      for (var c = 0; c < room.cup_results.length; c++) {
-        await db.CupResultModel.deleteMany({ _id: room.cup_results[c] }, function (err, _) {
-          if (err) throw err;
-        });
+    // the room is not closed
+    else {
+      // check if the leaving player is the host; assign next host
+      if (String(playerName) === String(room.host)) {
+        room.host = room.players[(Number(player_idx + 1) % Number(room.players.length))].name;
       }
+      await room.save();
+      
+      const room_finished = await db.RoomModel.findOne({ name: roomName });
+      // remove the leaving player in the room.players list
+      for (var i = 0; i < room_finished.players.length; i++) { 
+        if (String(room_finished.players[i]) === String(player._id)) { 
+          room_finished.players.splice(i, 1);
+        }
+      }
+      await room_finished.save();
+      // publish the new room info
+      pubsub.publish(`roomInfo ${roomName}`, {
+        roomInfo: {
+          data: room_finished,
+        }
+      });
     }
-    // delete the Room document itself
-    await db.RoomModel.deleteMany({ name: roomName }, function (err, _) {
-      if (err) throw err;
-    });
-
-    // publish the new room info
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${playerName}`, {
-      room: {
-        data: all_rooms,
-      }
+    // publish all_rooms info
+    const all_players = await db.PlayerModel.find({});
+    all_players.forEach(async (py) => {
+      const all_rooms = await db.RoomModel.find({ name: {'$regex': String(py.keyword), '$options': 'i'} });
+      pubsub.publish(`rooms ${String(py.name)}`, {
+        room: {
+          data: all_rooms,
+        }
+      });
     });
     return roomName;
   },
-
+  
 };
 
 export default Mutation;

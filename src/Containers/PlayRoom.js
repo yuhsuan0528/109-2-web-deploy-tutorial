@@ -11,7 +11,7 @@ import {
   ASSASSIN_MUTATION
 } from "../graphql"
 
-const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
+const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
   const [membersToChoose, setMembersToChoose] = useState(0)
   const [membersChosen, setMembersChosen] = useState([])
   const [playerStatus,setPlayerStatus] = useState([{name:me, me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'}])
@@ -114,8 +114,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
     membersChosen: membersChosen,
     setMembersChosen: setMembersChosen,
     setMembersToChoose: setMembersToChoose, 
-    setInRoom: setInRoom, 
-    roomsData: roomsData
+    setInRoom: setInRoom
   }
 
 
