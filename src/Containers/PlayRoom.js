@@ -124,7 +124,7 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom, roomsData}) => {
       <Row >
         <Col className="Column-1"  xl={{ span: 16}}>
           <Player playersParams={playersParams}/>
-          <Board status={gameStatus}/>
+          <Board status={gameStatus} roomInfo={roomInfo}/>
         </Col>
         <Col className="Column-2"  xl={{ span: 8}}>
           <Rightside rightsideParams={rightsideParams}/>

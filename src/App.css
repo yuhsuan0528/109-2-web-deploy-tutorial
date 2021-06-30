@@ -251,9 +251,9 @@ button[disabled]{
 
 .board {
   width: 650px;
-  position:absolute;
+  /* position:absolute;
   top: 260px;
-  left: 150px;
+  left: 150px; */
   z-index: 1;
 }
 
