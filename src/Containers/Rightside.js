@@ -240,14 +240,14 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
                 onCancel={() => handleCancel("conirmLeaveRoom")}
                 > 
                 {
-                  gameStarted ? <button 
+                  gameStarted ? <Button 
                   className="right-side-leave-room-button" 
                   bordered={false}
-                  onClick={()=>setVisible_confirmLeaveRoom(true)} disabled>離開房間</button> : 
-                  <button 
+                  onClick={()=>setVisible_confirmLeaveRoom(true)} disabled>離開房間</Button> : 
+                  <Button 
                   className="right-side-leave-room-button" 
                   bordered={false}
-                  onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</button>
+                  onClick={()=>setVisible_confirmLeaveRoom(true)}>離開房間</Button>
                 }
               </Popconfirm>
             }
@@ -255,7 +255,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
            </div>
            <div className="right-side-character-board">
 
-           <Card  bordered={false} style={{ width: 450 }}>
+           <Card  bordered={false} style={{ width: 500 }}>
             
             <div className="right-side-card">
               
@@ -321,7 +321,7 @@ const {me, displayStatus, server, membersToChoose, roomName, roomInfo, membersCh
             visible={isModalVisible_vote} 
             onOk={() => handleOk("vote")} 
             onCancel={() => handleCancel("vote")} 
-            width={600}>
+            width={800}>
               <VoteTable results={voteResults} players={roomInfo.players}/>
             </Modal>
 

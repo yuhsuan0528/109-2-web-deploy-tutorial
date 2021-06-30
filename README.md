@@ -11,7 +11,7 @@
 - 前端：使用 React.js
 - 後端：使用 Node.js
 - 資料庫：使用 MongoDB，搭配 MongoDB Atlas
-- 第三方套件、框架、程式碼：antd、GraphQL、Apollo
+- 第三方套件、框架、程式碼：antd、GraphQL、Apollo、React-animejs
 
 ## 登入畫面
 
