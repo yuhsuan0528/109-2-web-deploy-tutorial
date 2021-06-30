@@ -7,7 +7,7 @@ const CharacterTable = ({playerNum, players}) => {
     <>
       <div> 已加入玩家: 
       {
-        players !== undefined ?  players.map(({name}) => `, ${name}`) : <div></div>
+        players !== undefined ?  players.map(({name}) => ` ${name},`) : <div></div>
       }
       </div>
 
