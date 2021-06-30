@@ -47,26 +47,32 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
     }
   },[data])
 
+  // useEffect(()=>{
+  //   console.log(roomInfo)
+  // },[roomInfo])
+
   useEffect(() => {
-    if (roomInfo.status === "pre-game" && roomInfo.players){
-      let newPlayerStatus = []
-      for(let i=0; i<roomInfo.players.length; i++){
-        let name = roomInfo.players[i].name
-        if (name === me) newPlayerStatus.push({name:name, me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
-        else newPlayerStatus.push({name:name, me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
+    if(roomInfo.status && roomInfo.players){
+      if (roomInfo.status === "pre-game"){
+        let newPlayerStatus = []
+        for(let i=0; i<roomInfo.players.length; i++){
+          let name = roomInfo.players[i].name
+          if (name === me) newPlayerStatus.push({name:name, me: true, character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
+          else newPlayerStatus.push({name:name, me: false, character: 'null', isLeader: false, isAssigned: false, vote: 'null'})
+        }
+        // console.log(newPlayerStatus)
+        setPlayerStatus(newPlayerStatus)
+      } else if (roomInfo.status !== "pre-game" && !roomInfo.status.includes('win') && roomInfo.players.length === roomInfo.num_of_players){
+        const self = roomInfo.players.find(player => player.name === me)
+        let newPlayerStatus = [... self.players_list]
+        for(let i=0; i<newPlayerStatus.length; i++){
+          let roomInfoPlayer = roomInfo.players[i]
+          newPlayerStatus[i].isLeader = roomInfoPlayer.is_leader
+          newPlayerStatus[i].isAssigned = roomInfoPlayer.is_assigned
+          newPlayerStatus[i].vote = roomInfoPlayer.vote
+        }
+        setPlayerStatus(newPlayerStatus)
       }
-      // console.log(newPlayerStatus)
-      setPlayerStatus(newPlayerStatus)
-    } else if (roomInfo.status !== "pre-game" && roomInfo.players && roomInfo.players.length === roomInfo.num_of_players){
-      const self = roomInfo.players.find(player => player.name === me)
-      let newPlayerStatus = [... self.players_list]
-      for(let i=0; i<newPlayerStatus.length; i++){
-        let roomInfoPlayer = roomInfo.players[i]//match name
-        newPlayerStatus[i].isLeader = roomInfoPlayer.is_leader
-        newPlayerStatus[i].isAssigned = roomInfoPlayer.is_assigned
-        newPlayerStatus[i].vote = roomInfoPlayer.vote
-      }
-      setPlayerStatus(newPlayerStatus)
     }
     
   },[roomInfo.players])
@@ -77,6 +83,16 @@ const PlayRoom = ({me, displayStatus, roomName, setInRoom}) => {
       if (roomInfo.status.includes("assign") || roomInfo.status.includes("vote")){
         let newRound = parseInt(roomInfo.status.slice(-1))-1
         setGameStatus(prev => ({... prev, round: newRound}))
+      } else if (roomInfo.status.includes("win") && roomInfo.players){
+        let newPlayerStatus = []
+        for(let i=0; i<roomInfo.players.length; i++){
+          let name = roomInfo.players[i].name
+          let playerChar = roomInfo.players[i].players_list[i].character
+          if (name === me) newPlayerStatus.push({name:name, me: true, character: playerChar, isLeader: false, isAssigned: false, vote: 'null'})
+          else newPlayerStatus.push({name:name, me: false, character: playerChar, isLeader: false, isAssigned: false, vote: 'null'})
+        }
+        // console.log(newPlayerStatus)
+        setPlayerStatus(newPlayerStatus)
       }
     }
   }, [roomInfo.status])
