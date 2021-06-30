@@ -68,16 +68,19 @@ const Mutation = {
     await host.save();
     await room.save();
 
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(host.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${hostName}`, {
-      room: {
-        data: all_rooms,
-      }
-    });
     pubsub.publish(`roomInfo ${roomName}`, {
       roomInfo: {
         data: room,
       }
+    });
+    const all_players = await db.PlayerModel.find({});
+    all_players.forEach(async (py) => {
+      const all_rooms = await db.RoomModel.find({ name: {'$regex': String(py.keyword), '$options': 'i'} });
+      pubsub.publish(`rooms ${String(py.name)}`, {
+        room: {
+          data: all_rooms,
+        }
+      });
     });
     return roomName;
   },
@@ -110,16 +113,20 @@ const Mutation = {
     await player.save();
     await room.save();
     
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${playerName}`, {
-      room: {
-        data: all_rooms,
-      }
-    });
+    // publish new room infos
     pubsub.publish(`roomInfo ${roomName}`, {
       roomInfo: {
         data: room,
       }
+    });
+    const all_players = await db.PlayerModel.find({});
+    all_players.forEach(async (py) => {
+      const all_rooms = await db.RoomModel.find({ name: {'$regex': String(py.keyword), '$options': 'i'} });
+      pubsub.publish(`rooms ${String(py.name)}`, {
+        room: {
+          data: all_rooms,
+        }
+      });
     });
     return roomName;
   },
@@ -602,11 +609,14 @@ const Mutation = {
       });
     }
     // publish all_rooms info
-    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(player.keyword), '$options': 'i'} });
-    pubsub.publish(`rooms ${playerName}`, {
-      room: {
-        data: all_rooms,
-      }
+    const all_players = await db.PlayerModel.find({});
+    all_players.forEach(async (py) => {
+      const all_rooms = await db.RoomModel.find({ name: {'$regex': String(py.keyword), '$options': 'i'} });
+      pubsub.publish(`rooms ${String(py.name)}`, {
+        room: {
+          data: all_rooms,
+        }
+      });
     });
     return roomName;
   },
