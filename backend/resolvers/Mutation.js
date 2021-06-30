@@ -63,7 +63,6 @@ const Mutation = {
     
     room.players.push(host._id);
     host.room = room._id;
-    host.is_leader = true;
 
     await host.save();
     await room.save();
@@ -93,7 +92,7 @@ const Mutation = {
     const player = await validatePlayer(db, playerName);
     const room = await db.RoomModel.findOne({ name: roomName });
     if (!room) throw new Error("This room has not been created.");
-
+    
     // check if this player has already joined the room
     const existing = room.players.find(p => String(p) === String(player._id))
 
@@ -107,7 +106,6 @@ const Mutation = {
         throw new Error("Sorry, the password is incorrect.");
       }
       player.room = room._id;
-      player.is_leader = false;
       room.players.push(player._id);
     }
     await player.save();
@@ -187,6 +185,8 @@ const Mutation = {
           });
         }
       }
+      if (i === 0) myself.is_leader = true;
+      else myself.is_leader = false;
       myself.is_assigned = false;
       myself.vote = 'null';
       myself.players_list = [];

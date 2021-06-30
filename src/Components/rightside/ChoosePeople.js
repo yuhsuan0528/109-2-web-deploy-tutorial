@@ -9,7 +9,7 @@ const ChoosePeople = ({number, membersChosen, roomName, leaderName, setMembersCh
 
   return (
     <>
-      <h1> 請派票 </h1>
+      <h1> 請派票 (點選玩家卡牌) </h1>
       <div className="right-side-vote-area"> 
       <Space>
           {number > 0 && new Array(number).fill(null).map((_, index) => 
