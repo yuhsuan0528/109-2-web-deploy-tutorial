@@ -14,8 +14,6 @@ const VoteTable = ({ results, players }) => {
   const voteMap = {'T': '白', 'F': '黑'};
 
   var dataSource = [];
-  console.log(results);
-  console.log(players);
 
   if(results !== undefined){
     results.map((round, index) => {

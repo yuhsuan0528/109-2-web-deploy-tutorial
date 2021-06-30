@@ -121,7 +121,8 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
   }
 
   const checkMissingMembers = () => {
-    return roomInfo.players.length < roomInfo.num_of_players
+    if(Object.keys(roomInfo).length !== 0) return roomInfo.players.length < roomInfo.num_of_players;
+    else return true;
   }
 
   /*const checkRoomClosed = () => {
@@ -282,7 +283,11 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
           <div className="right-side-button-row">
             <Space >
               <Button className="right-side-button" bordered={false} onClick={() => showModal("cup")}>任務結果</Button>
-              <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")}>投票紀錄</Button>
+              {
+                checkMissingMembers() ? <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")} disabled>投票紀錄</Button>:
+                <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")} >投票紀錄</Button>
+              }
+              
               <Button className="right-side-button" bordered={false} onClick={() => showModal("rule")}>遊戲規則</Button>
               { 
                 (roomInfo.host === me && !gameStarted )? <Button 
