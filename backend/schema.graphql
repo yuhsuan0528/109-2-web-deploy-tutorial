@@ -1,11 +1,12 @@
 type Query {
-	rooms(playerName: String!, keyword: String): [Room]
+	rooms(playerName: String!): [Room]
 	roomChat(roomName: String!): [Message]
 	roomInfo(roomName: String!): Room
 }
 
 type Mutation {
 	logIn(name: String!): String!
+	searchRoom(playerName: String!, keyword: String): String!
 	createRoom(roomName: String!, hostName: String!, num: Int!, passwd: String!): String!
 	joinRoom(roomName: String!, playerName: String!, passwd: String!): String!
 	createMessage(roomName: String!, playerName: String!, body: String): Message!

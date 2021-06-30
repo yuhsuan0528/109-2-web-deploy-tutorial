@@ -25,6 +25,26 @@ const Mutation = {
     return player.name;
   },
 
+  async searchRoom ( parent, { playerName, keyword }, { db, pubsub }, info ) {
+    if (!playerName) throw new Error("Missing PlayerName.");
+    
+    // set the player's keyword
+    const player = await validatePlayer(db, playerName);
+    let search_key = '';
+    if (keyword) search_key = keyword;
+    player.keyword = String(search_key);
+    await player.save();
+
+    // publish the new room_list for the new keyword
+    const all_rooms = await db.RoomModel.find({ name: {'$regex': String(search_key), '$options': 'i'} });
+    pubsub.publish(`rooms ${playerName}`, {
+      room: {
+        data: all_rooms,
+      }
+    });
+    return playerName;
+  },
+
   async createRoom( parent, { roomName, hostName, num, passwd }, { db, pubsub }, info ) {
     if (!roomName) throw new Error("Missing room name.");
     if (!hostName) throw new Error("Missing host name.");
