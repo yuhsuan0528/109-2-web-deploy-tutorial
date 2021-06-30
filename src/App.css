@@ -119,13 +119,14 @@
   background-color: #E27A8F;
 }
 
-button:disabled,
-button[disabled]{
+.right-side-leave-room-button:disabled,
+.right-side-leave-room-button[disabled]{
   cursor: not-allowed;
   border: none;
   background-color: #BBBDBE;
   color: #ffffff;
   width:80px;
+  margin: 5px;
   height:30px;
 }
 
