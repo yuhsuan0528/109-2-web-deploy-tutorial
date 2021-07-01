@@ -1,7 +1,7 @@
 import '../../App.css';
 import { Space, Divider, Tag } from "antd";
 
-const CupTable = ({results}) => {
+const CupTable = ({ results, players }) => {
 
   const numberMap = {1: "一", 2: "二", 3: "三", 4: "四", 5:"五", 6: "六", 7: "七" ,8: "八", 9: "九", 10:"十"}; 
 
@@ -28,7 +28,7 @@ const CupTable = ({results}) => {
                 <div>
                 {
                   player.map((number, index) =>
-                    <Tag color="volcano">{`玩家${number+1}`}</Tag>
+                    <Tag color="volcano">{String(players[number].name)}</Tag>
                   )
                 }
                 </div>

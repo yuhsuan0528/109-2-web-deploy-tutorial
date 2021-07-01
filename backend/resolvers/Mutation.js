@@ -456,7 +456,7 @@ const Mutation = {
         }
         // switching status - check if the game is ended
         let total_bad_count = room_finished.cup_results.filter(cr => cr.bad > 0).length;
-        if (round >= 4 && room_finished.cup_results[3].bad === 1) total_bad_count -= 1;
+        if (room_finished.num_of_players >= 7 && round >= 4) {if (room_finished.cup_results[3].bad === 1) total_bad_count -= 1;}
         let total_good_count = room_finished.cup_results.length - total_bad_count;
         if (total_good_count >= 3) room_finished.status = 'assassin';
         else if (total_bad_count >= 3) room_finished.status = 'bad-win';
@@ -591,6 +591,7 @@ const Mutation = {
       if (String(playerName) === String(room.host)) {
         room.host = room.players[(Number(player_idx + 1) % Number(room.players.length))].name;
       }
+      room.status = 'pre-game';
       await room.save();
       
       const room_finished = await db.RoomModel.findOne({ name: roomName });

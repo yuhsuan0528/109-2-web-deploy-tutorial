@@ -34,16 +34,16 @@ const ChatRoom = ({me, displayStatus, roomName}) => {
         enterButton="送出"
         size="large"
         
-        onSearch={ (msg) => { 
+        onSearch={ async (msg) => { 
           if(!msg){
             displayStatus({
               type: "error",
-              msg: "Please enter message.",
+              msg: "請輸入訊息",
             });
             return;
           }
           try{
-             createMessage({
+            await createMessage({
               variables:{
                 roomName: roomName,
                 playerName: me,

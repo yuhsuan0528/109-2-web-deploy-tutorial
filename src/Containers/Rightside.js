@@ -33,7 +33,6 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
   const [isModalVisible_rule, setIsModalVisible_rule] = useState(false);
   const [isModalVisible_result, setIsModalVisible_result] = useState(false);
 
-  const [visible_confirmCloseRoom, setVisible_confirmCloseRoom] = useState(false);
   const [visible_confirmLeaveRoom, setVisible_confirmLeaveRoom] = useState(false);
 
   const [cardContent, setCardContent] = useState("character");
@@ -66,7 +65,6 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
     else if(type === "cup") setIsModalVisible_cup(false);
     else if(type === "rule") setIsModalVisible_rule(false);
     else if(type === "result") setIsModalVisible_result(false);
-    else if(type === "conirmCloseRoom") setVisible_confirmCloseRoom(false);
     else if(type === "conirmLeaveRoom") setVisible_confirmLeaveRoom(false);
   };
 
@@ -282,7 +280,10 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
             
           <div className="right-side-button-row">
             <Space >
-              <Button className="right-side-button" bordered={false} onClick={() => showModal("cup")}>任務結果</Button>
+              {
+                checkMissingMembers() ? <Button className="right-side-button" bordered={false} onClick={() => showModal("cup")} disabled>任務結果</Button>:
+                <Button className="right-side-button" bordered={false} onClick={() => showModal("cup")} >任務結果</Button>
+              }
               {
                 checkMissingMembers() ? <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")} disabled>投票紀錄</Button>:
                 <Button className="right-side-button" bordered={false} onClick={() => showModal("vote")} >投票紀錄</Button>
@@ -293,7 +294,7 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
                 (roomInfo.host === me && !gameStarted )? <Button 
                 className="right-side-button" 
                 bordered={false} 
-                onClick={ () => {
+                onClick={async () => {
                   if(roomInfo.num_of_players !== roomInfo.players.length) {
                     displayStatus({
                         type:"error",
@@ -302,7 +303,7 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
                   }
                   else{
                     try{
-                       startGame({
+                      await startGame({
                       variables:{
                           roomName: roomName,
                           playerName: me,
@@ -335,7 +336,7 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
             onOk={() => handleOk("cup")} 
             onCancel={() => handleCancel("cup")} 
             width={900}>
-              <CupTable results={cupResults}/>
+              <CupTable results={cupResults} players={roomInfo.players}/>
             </Modal>
 
             <Modal title="遊戲規則" 
@@ -368,7 +369,7 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
                 <div>
                 {
                   cupResults[Object.keys(cupResults)[Object.keys(cupResults).length-1]].player.sort().map((number, index) =>{
-                    return( <Tag color="volcano">{`玩家${number+1}`}</Tag> )
+                    return( <Tag color="volcano">{roomInfo.players[number].name}</Tag> )
                   })
                 }
                 
@@ -377,7 +378,7 @@ const {me, displayStatus, membersToChoose, roomName, roomInfo, membersChosen, se
               <Space split={<Divider type="vertical" />}>
               
               {
-                voteResults.length === 0 || voteResults === undefined ? <div/> :
+                voteResults.length === 0 || voteResults === undefined || roomInfo.players.length < roomInfo.num_of_players ? <div/> :
                 new Array(roomInfo.num_of_players).fill(null).map((_, index) => 
                 <Space direction="vertical">
                 <div style={{fontSize:"20px"}}>{roomInfo.players[index].name}</div>

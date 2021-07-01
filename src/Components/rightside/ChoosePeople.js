@@ -19,9 +19,9 @@ const ChoosePeople = ({number, membersChosen, roomName, leaderName, setMembersCh
       {
         number === 0 ? <Button 
         className="right-side-assign-button" 
-        onClick={  () => {
+        onClick={ async () => {
           try{
-             assign({
+            await assign({
             variables:{
                 roomName: roomName,
                 leaderName: leaderName,

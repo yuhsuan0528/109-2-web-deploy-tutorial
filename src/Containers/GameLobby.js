@@ -39,7 +39,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
     else if(type === "create") setIsModalVisible_create(true);
   };
 
-  const handleOk =  async (type) => {
+  const handleOk = async (type) => {
     if(type === "password"){
       if(passwordInput === ""){
         displayStatus({
@@ -47,9 +47,15 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
           msg: "請輸入密碼",
         });
       }
+      else if (String(passwordInput) !== String(findPasswd(targetRoomName))) {
+        displayStatus({
+          type:"error",
+          msg: "密碼錯誤!!!QQ",
+        });
+      }
       else {
         try{
-            await joinRoom({
+            joinRoom({
             variables:{
                 roomName: targetRoomName,
                 playerName: me,
@@ -77,7 +83,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
       }
       else{
         try{
-        await searchRoom({
+        searchRoom({
          variables:{
              playerName: me,
              keyword: ""}
@@ -94,7 +100,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
         }
         else{
           setIsModalVisible_create(false);
-           createRoom({
+          await createRoom({
             variables:{
               roomName: createRoomName,
               hostName: me,
@@ -197,6 +203,12 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
      else return true;
   }
 
+  const findPasswd = (name) => {
+    const target = data.rooms.find(room => room.name === name);
+    if(target.passwd) return target.passwd;
+    else return undefined;
+ }
+
   return (
 
     <>
@@ -210,7 +222,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
         bordered={false} size="large" 
         onClick={() => {     
                 try{
-                   searchRoom({
+                  searchRoom({
                   variables:{
                       playerName: me,
                       keyword: inputName
@@ -226,7 +238,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
         bordered={false} size="large" 
         onClick={ () => {     
                 try{
-                   searchRoom({
+                  searchRoom({
                   variables:{
                       playerName: me,
                       keyword: ""
@@ -264,7 +276,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
                     bordered={false} 
                     block={true} 
                     size="large" 
-                    onClick={  () => {     
+                    onClick={ () => {     
                           try{
                             joinRoom({
                             variables:{
@@ -287,7 +299,7 @@ const GameLobby = ({me, setInRoom, inRoom, displayStatus, setRoomName}) => {
                     bordered={false} 
                     block={true} 
                     size="large" 
-                    onClick={  () => {     
+                    onClick={ () => {     
                           try{
                             joinRoom({
                             variables:{

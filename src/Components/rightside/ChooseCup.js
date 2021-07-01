@@ -22,9 +22,9 @@ const ChooseCup = ({name, roomName, cupped, setCupped}) => {
       <div className="right-side-vote-button-area"> 
         <button 
         className="right-side-vote-button" 
-        onClick={ () => {
+        onClick={ async () => {
           try{
-             cup({
+            await cup({
             variables:{
                 roomName: roomName,
                 playerName: name,
@@ -39,9 +39,9 @@ const ChooseCup = ({name, roomName, cupped, setCupped}) => {
         }}>任務成功</button>
         <button 
         className="right-side-vote-button" 
-        onClick={  () => {
+        onClick={ async () => {
           try{
-             cup({
+            await cup({
             variables:{
                 roomName: roomName,
                 playerName: name,
